@@ -1,0 +1,11 @@
+Do once a session "module load openmpi/gnu"
+
+
+A template directory for your MPI program in assignment 1.
+
+Name your source file ring.c and call "make" to compile your program.
+
+Change inside the job script "job_mpi.sh" the number of nodes (1 <= nodes <= 10).
+Don't change ppn=16. The number of processors used is the (#nodes * 16).
+
+Then run your program with the batch script "qsub job_mpi.sh".
