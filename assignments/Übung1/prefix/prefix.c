@@ -15,6 +15,7 @@ int prefix(prefix_data data, prefix_operator op, int* processor_count)
   *processor_count = 1;
   long index;
 
+#pragma omp parallel for
   for (index = 1; index < data.vector_len; index++)
     {
       char* target_pointer = data.pointer + index * op.type_len;
