@@ -32,7 +32,7 @@ static int window_number = -1;
 // initialize h-array
 static void init_data(int xsize, int ysize, double h[xsize + 2][ysize + 2]) {
 	// initialize data
-	// TODO # omp parallel? for
+	#pragma omp for
 	for(int i = 0; i < xsize + 2; i++)
 		for(int j = 0; j < ysize + 2; j++)
 			h[i][j] = HEAT_MIN;
@@ -48,7 +48,7 @@ static void heat_source(int xsize, int ysize, double h[xsize + 2][ysize + 2]) {
 	sizey = ysize / 4;
 
 	// time-invariant constant values
-	// TODO # omp parallel? for
+	#pragma omp for
 	for(int i = 0; i < sizex; i++)
 		for(int j = 0; j < sizey; j++) {
 			h[1 * xsize / 4 - (sizex / 2) + i][1 * ysize / 4 - (sizey / 2) + j] = HEAT_MAX;
@@ -62,13 +62,14 @@ static void heat_source(int xsize, int ysize, double h[xsize + 2][ysize + 2]) {
 // finite difference method (Laplace)
 static void update(int xsize, int ysize, double h[xsize + 2][ysize + 2], double h_new[xsize + 2][ysize + 2]) {
 	// calculate new value based upon neighbor values
-	// TODO # omp parallel? for
+	#pragma omp for
 	for(int i = 1; i <= xsize; i++)
 		for(int j = 1; j <= ysize; j++)
 			h_new[i][j] = 0.25 * (h[i - 1][j] + h[i + 1][j] + h[i][j - 1] + h[i][j + 1]);
 
 	// update array with new values
-	// TODO # omp parallel? for
+	// TODO wait for display, if using task
+	#pragma omp for
 	for(int i = 1; i <= xsize; i++)
 		for(int j = 1; j <= ysize; j++)
 			h[i][j] = h_new[i][j];
@@ -78,6 +79,7 @@ static void update(int xsize, int ysize, double h[xsize + 2][ysize + 2], double 
 /*============================================================================*/
 // display current heat distribution
 static void display(int xsize, int ysize, double h[xsize + 2][ysize + 2]) {
+	#pragma omp parallel for // Mit Absicht parallel for
 	for(int i = 1; i <= xsize; i++)
 		for(int j = 1; j <= ysize; j++) {
 			unsigned int icolor;
@@ -91,14 +93,17 @@ static void display(int xsize, int ysize, double h[xsize + 2][ysize + 2]) {
 				color = 1.0;
 
 			if(graphics) {
-				graphic_setRainbowColor(window_number, (double) color);
-				graphic_drawPoint(window_number, i, j);
+				#pragma omp critical(draw)
+				{
+					graphic_setRainbowColor(window_number, (double) color);
+					graphic_drawPoint(window_number, i, j);
+				}
 			}
 		}
 
 	// display columnwise
 	if(graphics)
-		graphic_flush (window_number);
+		graphic_flush(window_number);
 }
 
 
@@ -107,6 +112,7 @@ static void display(int xsize, int ysize, double h[xsize + 2][ysize + 2]) {
 static unsigned long checksum(int xsize, int ysize, double h[xsize + 2][ysize + 2]) {
 	unsigned long checksum = 0;
 
+	#pragma omp parallel for reduction(+:checksum)
 	for(int i = 0; i < xsize + 2; i++)
 		for(int j = 0; j < ysize + 2; j++)
 			checksum += (unsigned long)h[i][j];
@@ -170,11 +176,14 @@ int main(int argc, char **argv) {
 	array_t *h = (array_t *) h_buf;
 	array_t *h_new = (array_t *) h_new_buf;
 
-	// initialize data
-	init_data(xsize, ysize, h);
+	#pragma omp parallel
+	{
+		// initialize data
+		init_data(xsize, ysize, h);
 
-	// add heat sources
-	heat_source(xsize, ysize, h);
+		// add heat sources
+		heat_source(xsize, ysize, h);
+	}
 
 	/*--------------------------------------------------------------------------*/
 	// iteration steps
@@ -184,18 +193,22 @@ int main(int argc, char **argv) {
 
 	for(int t = 0; t < niter; t++) {
 		// display every niter step
-		if((graphics > 0) && (t % graphics == (graphics - 1))) {
-			t1 = gettime();
-			display(xsize, ysize, h);
-			printf("time step %8d of %8d: %8.6f s per time step\n", (t + 1), niter, (t1 - t0) / graphics);
-			t0 = gettime();
+		#pragma omp parallel
+		{
+			#pragma omp single
+			if((graphics > 0) && (t % graphics == (graphics - 1))) {
+				t1 = gettime();
+				display(xsize, ysize, h);
+				printf("time step %8d of %8d: %8.6f s per time step\n", (t + 1), niter, (t1 - t0) / graphics);
+				t0 = gettime();
+			}
+
+			// compute new values
+			update(xsize, ysize, h, h_new);
+
+			// permanent heat source
+			heat_source(xsize, ysize, h);
 		}
-
-		// compute new values
-		update(xsize, ysize, h, h_new);
-
-		// permanent heat source
-		heat_source(xsize, ysize, h);
 	}
 
 	/*--------------------------------------------------------------------------*/
