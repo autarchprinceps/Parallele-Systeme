@@ -1,0 +1,1911 @@
+pgcc(1)                                                                pgcc(1)
+
+
+
+NNAAMMEE
+       ppggcccc - The Portland Group ANSI and K&R C compiler
+
+SSYYNNOOPPSSIISS
+       ppggcccc [ _-_f_l_a_g ]...  _s_o_u_r_c_e_f_i_l_e...
+
+DDEESSCCRRIIPPTTIIOONN
+       ppggcccc  is the interface to the Portland Group (PGI) C compiler for AMD64
+       and IA32/EM64T processors.  ppggcccc invokes the C compiler, assembler, and
+       linker with options derived from its command line arguments.
+
+       Suffixes  of  source  file  names indicate the type of processing to be
+       done:
+
+       _._c     C source; preprocess, compile
+       _._i     C source after preprocessing; compile
+       _._s     assembler source; assemble
+       _._S     assembler source; preprocess, assemble
+       _._o     object file; passed to linker
+       _._a     library archive file; passed to linker
+
+       If coinstalled with ppggff7777 or ppggffoorrttrraann, Fortran file suffixes are  also
+       recognized  and  compiled  with  the  ppggff7777 or ppggffoorrttrraann compilers; see
+       ppggff7777, ppggffoorrttrraann, and _P_G_I _U_s_e_r_’_s _G_u_i_d_e.  Other files are passed to  the
+       linker (if linking is requested) with a warning message.
+
+       Unless  one  overrides  the default action using a command-line option,
+       ppggcccc deletes the intermediate preprocessor and assembler files (see the
+       options  --cc,  --EE, --PP, and --MMkkeeeeppaassmm); if a single C program is compiled
+       and linked with one ppggcccc command, the intermediate object file is  also
+       deleted.   Linking is the last stage of the compile process, unless you
+       use one of the --cc, --EE, --PP, or --SS options, or unless compilation  errors
+       stop the whole process.
+
+OOPPTTIIOONNSS
+       Options  must be separate; --ccss is different from --cc --ss.  Here is a list
+       of all options, grouped by type.  More  detailed  explanations  are  in
+       following sections.
+
+       OOvveerraallll OOppttiioonnss
+              -- -# -### -c -[no]defaultoptions -dryrun -drystdinc --flagcheck
+              -flags -help_[_=_o_p_t_i_o_n_] -Manno -Minform=_l_e_v_e_l -Mkeepasm -M[no]list
+              -noswitcherror -o _f_i_l_e -rc _r_c_f_i_l_e -S -show -silent -time -v -V
+              -V_<_v_e_r_> --version -w -W_p_a_s_s_,_o_p_t_i_o_n -Y_p_a_s_s_,_d_i_r_e_c_t_o_r_y
+
+       OOppttiimmiizzaattiioonn OOppttiioonnss
+              -alias=_o_p_t_i_o_n -fast -fastsse -fpic -fpic -Kpic -Kpic
+              -M[no]autoinline=_o_p_t_i_o_n -Mcache_align -Mconcur=_o_p_t_i_o_n
+              -M[no]depchk -M[no]dse -Mextract=_o_p_t_i_o_n -M[no]frame
+              -Minfo=_o_p_t_i_o_n -Minline_=_o_p_t_i_o_n -Minstrument=_o_p_t_i_o_n
+              -M[no]ipa=_o_p_t_i_o_n -M[no]lre_[_=_a_s_s_o_c_|_n_o_a_s_s_o_c_] -M[no]movnt
+              -Mneginfo=_o_p_t_i_o_n -Mnoopenmp -Mnosgimp -Mnovintr -Mpfi_[_=_o_p_t_i_o_n_]
+              -Mpfo_[_=_o_p_t_i_o_n_] -M[no]pre_[_=_a_l_l_] -M[no]prefetch_=_o_p_t_i_o_n
+              -Mprof=_o_p_t_i_o_n -M[no]propcond -Mquad -Msafe_lastval
+              -M[no]safeptr=_o_p_t_i_o_n -M[no]smart -M[no]smartalloc_[_=_o_p_t_i_o_n_]
+              -M[no]stride0 -M[no]unroll=_o_p_t_i_o_n -M[no]unsafe_par_align
+              -M[no]vect=_o_p_t_i_o_n -M[no]zerotrip -mp_[_=_o_p_t_i_o_n_] -O_l_e_v_e_l -pg
+
+       DDeebbuuggggiinngg OOppttiioonnss
+              -g -gopt -M[no]bounds -Mchkfpstk -Mchkstk -Mcoff -Mdwarf1
+              -Mdwarf2 -Mdwarf3 -Melf -Mnodwarf -[no]traceback
+
+       PPrreepprroocceessssoorr OOppttiioonnss
+              -C -D_m_a_c_r_o -dD -dI -dM -dN -E -I_d_i_r_e_c_t_o_r_y -M
+              -Mcpp_=_[_[_n_o_]_c_o_m_m_e_n_t_|_m_|_m_d_|_m_m_|_m_m_d_|_m_q_:_t_a_r_g_e_t_|_m_t_:_t_a_r_g_e_t_|_s_u_f_f_i_x_:_s_u_f_f_]
+              -MD -MM -MMD -MQ -MT -Mnostddef -Mnostdinc -Mpreprocess -P
+              -u_n_a_m_e -Yi,_d_i_r_e_c_t_o_r_y -Yp,_d_i_r_e_c_t_o_r_y
+
+       AAsssseemmbblleerr OOppttiioonnss
+              -Wa,_a_r_g_u_m_e_n_t_[_,_a_r_g_u_m_e_n_t_]_._._.  -Ya,_d_i_r_e_c_t_o_r_y
+
+       LLiinnkkeerr OOppttiioonnss
+              -acclibs --[no-]as-needed -Bdynamic -Bstatic -Bstatic_pgi
+              -g77libs -l_l_i_b_r_a_r_y -l_l_i_b_r_a_r_y -m -M[no]eh_frame -Mlfs
+              -Mmpi=_o_p_t_i_o_n -Mnostartup -Mnostdlib -M[no]rpath -Mscalapack
+              -pgcpplibs -pgf77libs -pgf90libs -r -r -rpath _d_i_r_e_c_t_o_r_y -s
+              -shared -soname _n_a_m_e -u_n_a_m_e --[no-]whole-archive
+              -Wl,_a_r_g_u_m_e_n_t_[_,_a_r_g_u_m_e_n_t_]_._._.  -YC,_d_i_r_e_c_t_o_r_y -Yl,_d_i_r_e_c_t_o_r_y
+              -Yl,_d_i_r_e_c_t_o_r_y -YS,_d_i_r_e_c_t_o_r_y -YU,_d_i_r_e_c_t_o_r_y
+
+       LLaanngguuaaggee OOppttiioonnss
+              -asmsuffix=_s_u_f_f_i_x -B -c8x -c89 -c9x -c99 -csuffix=_s_u_f_f_i_x
+              -M[no]asmkeyword -M[no]builtin -M[no]dalign -Mdollar=_c_h_a_r -Mfcon
+              -Mlibsuffix=_s_u_f_f_i_x -M[no]llalign -M[no]m128 -Mobjsuffix=_s_u_f_f_i_x
+              -Mschar -M[no]signextend -M[no]single -Muchar -Xa -Xc -Xs -Xt
+
+       TTaarrggeett--ssppeecciiffiicc OOppttiioonnss
+              -acc -K[no]ieee -Ktrap=_o_p_t_i_o_n -M[no]daz -M[no]flushz
+              -M[no]fpapprox=_o_p_t_i_o_n -M[no]fpmisalign -M[no]fprelaxed=_o_p_t_i_o_n
+              -M[no]func32 -Mgccbugs -M[no]longbranch -M[no]loop32
+              -M[no]reg_struct_return -M[no]second_underscore
+              -Mwritable-strings -m32 -m64 -mcmodel=_s_m_a_l_l_|_m_e_d_i_u_m -pc _v_a_l
+              -ta=_t_a_r_g_e_t -tp=_t_a_r_g_e_t
+
+       Note: when source files are compiled using any of the --gg, --mmpp,
+       --MMccoonnccuurr, --MMiippaa, or --MMpprrooff options, the same option(s) should be used
+       when using ppggcccc to link the objects.
+
+
+OOvveerraallll OOppttiioonnss
+       ----        Anything after this switch is treated as a filename.  Note
+                 that most tools will not allow a filename starting with a
+                 dash, so these should be avoided.
+
+       --##        Display the invocations of the compiler, assembler, and
+                 linker.  These invocations are the command lines created by
+                 ppggcccc.
+
+       --######      Display invocations of the compiler, assembler and linker,
+                 but do not execute them.
+
+       --cc        Skip the link step; compile and assemble only.
+
+       --ddeeffaauullttooppttiioonnss _(_d_e_f_a_u_l_t_) --nnooddeeffaauullttooppttiioonnss
+                 Use (don’t use) the default options set in site-specific or
+                 user-specific PPRREEOOPPTTIIOONNSS or PPOOSSTTOOPPTTIIOONNSS driver variables.
+
+       --ddrryyrruunn   Use this option to display the invocations of the compiler,
+                 assembler, and linker but do not execute them.
+
+       --ddrryyssttddiinncc
+                 Display the standard include directories without invoking the
+                 compiler.
+
+       ----ffllaaggcchheecckk
+                 Don’t compile anything; just emit any messages for command-
+                 line switch errors.  Return a success error code if there are
+                 no command-line switch errors.
+
+       --ffllaaggss    Display all valid ppggcccc command-line options in alphabetical
+                 order.
+
+       --hheellpp_[_=_o_p_t_i_o_n_]
+                 Displays command-line options recognized by ppggcccc on the
+                 standard output.  ppggcccc --hheellpp --ootthheerrsswwiittcchh will give help
+                 about --ootthheerrsswwiittcchh.  The default is to list ppggcccc command line
+                 options by group; options are:
+
+                 ggrroouuppss   Print out the groups into which the switches are
+                          organized.
+
+                 aassmm      Print help for assembler command-line options.
+
+                 ddeebbuugg    Print help for debugging command-line options.
+
+                 llaanngguuaaggee Print help for language-specific command-line
+                          options.
+
+                 lliinnkkeerr   Print help for linker options.
+
+                 oopptt      Print help for optimization command-line options.
+
+                 ootthheerr    Print help for any other command-line options.
+
+                 oovveerraallll  Print help for overall command-line options.
+
+                 pphhaassee    Print help for the known compiler phases.
+
+                 pprreepprroo   Print help for preprocessor command-line options.
+
+                 ssuuffffiixx   Describe the known file suffixes.
+
+                 sswwiittcchh   Print all switches in alphabetical order.
+
+                 ttaarrggeett   Print help for target-specific command-line options.
+
+                 vvaarriiaabbllee Show the ppggcccc configuration; this is the same as
+                          --sshhooww.
+
+       --MMaannnnoo    Produce annotated assembly files, where source code is
+                 intermixed with assembly language; implies --MMkkeeeeppaassmm.
+
+       --MMiinnffoorrmm==_l_e_v_e_l
+                 Specify the minimum level of error severity that the compiler
+                 displays during compilation.
+
+                 ffaattaall     Instructs the compiler to display fatal error
+                           messages.
+
+                 ffiillee _(_d_e_f_a_u_l_t_) nnooffiillee
+                           Print out (don’t print out) the names of files as
+                           they are compiled; this is only active when there
+                           is more than one file on the command line.
+
+                 sseevveerree    Instructs the compiler to display severe and fatal
+                           error messages.
+
+                 wwaarrnn      Instructs the compiler to display warning, severe
+                           and fatal error messages.
+
+                 iinnffoorrmm    Instructs the compiler to display all error
+                           messages (inform, warn, severe and fatal).
+
+                 The default is --MMiinnffoorrmm==wwaarrnn.
+
+       --MMkkeeeeppaassmm Keep the assembly file for each source file, but continue to
+                 assemble and link the program. This is mainly for use in
+                 compiler performance analysis and debugging.
+
+       --MMlliisstt --MMnnoolliisstt _(_d_e_f_a_u_l_t_)
+                 Create (don’t create) a listing file.
+
+       --nnoosswwiittcchheerrrroorr
+                 Ignore unknown command line switches after printing an
+                 warning message; the default behavior is to print an error
+                 message and halt.
+
+       --oo _f_i_l_e   Use _f_i_l_e as the name of the executable program, rather than
+                 the default aa..oouutt.  If used with --cc, --PP, or --SS, and a single
+                 input file, _f_i_l_e is used as the name of the object,
+                 preprocessor, or assembler output file.
+
+       --rrcc _r_c_f_i_l_e
+                 Specifies the name of a ppggcccc startup configuration file.  If
+                 _r_c_f_i_l_e is a full pathname, then use the specified file.  If
+                 _r_c_f_i_l_e is a relative pathname, use the file name as found in
+                 the $DRIVER directory.
+
+       --SS        Skip the assembly and link steps. Leave the output from the
+                 compile step in a file named _f_i_l_e..ss for each file named
+                 _f_i_l_e..cc.
+
+       --sshhooww     Produce help information describing the current ppggcccc
+                 configuration.
+
+       --ssiilleenntt   Do not print warning messages. Same as --MMiinnffoorrmm==sseevveerree.
+
+       --ttiimmee     Print execution times for the various steps in the compiler
+                 itself.
+
+       --vv        Verbose mode; print out the command line for each tool before
+                 it is executed.
+
+       --VV        Display version messages and other information.
+
+       --VV_<_v_e_r_>   If the specified version of the compiler is installed, that
+                 version of the compiler is invoked.
+
+       ----vveerrssiioonn Display version messages and other information.
+
+       --ww        Do not print warning messages.
+
+       --WW_p_a_s_s_,_o_p_t_i_o_n_[_,_o_p_t_i_o_n_._._._]
+                 Pass _o_p_t_i_o_n to the specified _p_a_s_s.  Each comma-delimited
+                 _o_p_t_i_o_n is passed as a separate argument.  The passes are:
+
+                 00         for the compiler,
+
+                 aa         for the assembler,
+
+                 ii         for the interprocedural analyzer, and
+
+                 ll         for the linker.
+
+       --YY_p_a_s_s_,_d_i_r_e_c_t_o_r_y
+                 Look in _d_i_r_e_c_t_o_r_y for pass _p_a_s_s, rather than in the standard
+                 area. The passes are:
+
+                 00         Search for the compiler executable in _d_i_r_e_c_t_o_r_y.
+
+                 aa         Search for the assembler executable in _d_i_r_e_c_t_o_r_y.
+
+                 CC         Search for the compiler library in _d_i_r_e_c_t_o_r_y.
+
+                 ii         Search for the InterProcedural Analyzer (IPA) in
+                           _d_i_r_e_c_t_o_r_y.
+
+                 ll         Search for the linker in _d_i_r_e_c_t_o_r_y.
+
+                 II         Set the compiler’s standard include directory to
+                           _d_i_r_e_c_t_o_r_y.  The standard include directory is set
+                           to a default value by the driver and can be
+                           overridden by this option.
+
+                 LL         If the linker supports the --YYLL option, then pass
+                           the option --YYLL,,_d_i_r_e_c_t_o_r_y to the linker. Otherwise,
+                           use _d_i_r_e_c_t_o_r_y as the standard library location.
+
+                 SS         Search for the startup object files in _d_i_r_e_c_t_o_r_y.
+
+                 UU         If the linker supports the --YYUU option, then pass
+                           the option --YYUU,,_d_i_r_e_c_t_o_r_y to the linker. Otherwise
+                           this option is ignored.
+
+
+OOppttiimmiizzaattiioonn OOppttiioonnss
+       --aalliiaass_=_o_p_t_i_o_n
+              Specifies whether to optimizing using ANSI C type-based pointer
+              disambiguation rules.  The options can be one of:
+
+              aannssii      Assume ANSI C type-based pointer disambiguation rules
+                        apply; this can enable better optimization in some
+                        cases.  The rules state that a load or store through a
+                        pointer of any type will not conflict with a load or
+                        store of a variable or through a pointer of a
+                        different type.  This is the default with --OO22 and
+                        above.
+
+              ttrraaddiittiioonnaall
+                        Assume traditional C semantics apply.  The compiler
+                        will assume that a load or store through any pointer
+                        might conflict with any variable or pointer
+                        dereference unless it can prove otherwise.  This is
+                        the default with --OO11 and below, and when there is a
+                        type-cast pointer reference in the function.
+
+       --ffaasstt  Chooses generally optimal flags for the target platform.  Use
+              ppggcccc --ffaasstt --hheellpp to see the equivalent switches.  Note this sets
+              the optimization level to a minimum of 2; see --OO.
+
+       --ffaassttssssee
+              Chooses generally optimal flags for a processor that supports to
+              vectorize for the SSE/AVX instructions.  Use ppggcccc --ffaassttssssee --hheellpp
+              to see the equivalent switches.
+
+       --ffppiicc  (Linux only) Instructs the compiler to generate position-
+              independent code which can be used to create shared object files
+              (dynamically linked libraries).
+
+       --ffppiicc  (Linux only) Instructs the compiler to generate position-
+              independent code which can be used to create shared object files
+              (dynamically linked libraries).
+
+       --KKppiicc  Equivalent to --ffppiicc; provided for compatibility with other
+              compilers.
+
+       --KKppiicc  Equivalent to --ffppiicc; provided for compatibility with other
+              compilers.
+
+       --MMaauuttooiinnlliinnee_[_o_p_t_i_o_n_[_,_o_p_t_i_o_n_._._._] --MMnnooaauuttooiinnlliinnee _(_d_e_f_a_u_l_t_)
+              Enable inlining of functions with the _i_n_l_i_n_e attribute.
+              --MMaauuttooiinnlliinnee is implied with the --ffaasstt switch.  The options are:
+
+              lleevveellss::nn  Inline up to nn levels of function calls; the default
+                        is to inline up to 10 levels.
+
+              mmaaxxssiizzee::nn Only inline functions with a size of nn or less.  The
+                        size roughly corresponds to the number of statements
+                        in the function, though the correspondence is not
+                        direct.  The default is to inline functions with a
+                        size of 100 or less.
+
+              ttoottaallssiizzee::nn
+                        Stop inlining when this function reaches a size of nn.
+                        The default is to stop inlining when a size of 8000
+                        has been reached.
+
+       --MMccaacchhee__aalliiggnn
+              Align _u_n_c_o_n_s_t_r_a_i_n_e_d data objects of size greater than or equal
+              to 16 bytes on cache-line boundaries.  An _u_n_c_o_n_s_t_r_a_i_n_e_d object
+              is a variable or array that is not a member of an aggregate
+              structure or common block, is not allocatable, and is not an
+              automatic array.
+
+       --MMccoonnccuurr_[_=_o_p_t_i_o_n_[_,_o_p_t_i_o_n_,_._._._]_]
+              Instructs the compiler to enable auto-concurrentization of
+              loops.  This also sets the optimization level to a minimum of 2;
+              see --OO.  If --MMccoonnccuurr is specified, multiple processors will be
+              used to execute loops which the compiler determines to be
+              parallelizable.  When linking, the --MMccoonnccuurr switch must be
+              specified or unresolved references will occur. The
+              OOMMPP__NNUUMM__TTHHRREEAADDSS or NNCCPPUUSS environment variables control how many
+              processors will be used to execute parallelized loops.  The
+              options can be one or more of the following:
+
+              aallllccoorreess  Use all available cores when the environment variables
+                        OOMMPP__NNUUMM__TTHHRREEAADDSS and NNCCPPUUSS are not set.  This must be
+                        specified at link time.
+
+              bbiinndd      Bind threads to cores or processors.  This must be
+                        specified at link time.
+
+              aallttccooddee::nn nnooaallttccooddee
+                        Generate (don’t generate) alternate scalar code for
+                        parallelized loops.  The parallelizer generates scalar
+                        code to be executed whenever the loop count is less
+                        than or equal to nn.  If nnooaallttccooddee is specified, the
+                        parallelized version of the loop is always executed
+                        regardless of the loop count.
+
+              aallttrreedduuccttiioonn_[_:_n_]
+                        Generate alternate scalar code for parallelized loops
+                        containing a reduction.  If a parallelized loop
+                        contains a reduction, the parallelizer generates
+                        scalar code to be executed whenever the loop count is
+                        less than or equal to nn.
+
+              aassssoocc _(_d_e_f_a_u_l_t_) nnooaassssoocc
+                        Enable (disable) parallelization of loops with
+                        reductions.
+
+              ccnnccaallll nnooccnnccaallll _(_d_e_f_a_u_l_t_)
+                        Assume (don’t assume) that loops containing calls are
+                        safe to parallelize. Also, no minimum loop count
+                        threshold must be satisfied before parallelization
+                        will occur, and last values of scalars are assumed to
+                        be safe.
+
+              ddiisstt::bblloocckk
+                        Parallelize with block distribution. Contiguous blocks
+                        of iterations of a parallelizable loop are assigned to
+                        the available processors.
+
+              ddiisstt::ccyycclliicc
+                        Parallelize with cyclic distribution. The outermost
+                        parallelizable loop in any loop nest is parallelized.
+                        If a parallelized loop is innermost, its iterations
+                        are allocated to processors cyclically. For example,
+                        if there are 3 processors executing a loop, processor
+                        0 performs iterations 0, 3, 6, etc; processor 1
+                        performs iterations 1, 4, 7, etc; and processor 2
+                        performs iterations 2, 5, 8, etc.
+
+              iinnnneerrmmoosstt nnooiinnnneerrmmoosstt _(_d_e_f_a_u_l_t_)
+                        Enable (disable) parallelization of innermost loops.
+
+              lleevveellss::nn  Parallelize loops nested at most nn levels deep; the
+                        default is 3.
+
+              nnuummaa nnoonnuummaa
+                        (Linux only) Use (don’t use) thread/processor affinity
+                        for NUMA architectures; use this option when linking
+                        the program.  --MMccoonnccuurr==nnuummaa will link in a numa
+                        library and objects to prevent the operating system
+                        from migrating threads from one processor to another.
+
+       --MMddeeppcchhkk _(_d_e_f_a_u_l_t_) --MMnnooddeeppcchhkk
+              Assume (don’t assume) that potential data dependencies exist.
+              --MMnnooddeeppcchhkk may result in incorrect code; the --MMssaaffeeppttrr switch
+              provides a less dangerous way to accomplish the same thing.
+
+       --MMddssee --MMnnooddssee _(_d_e_f_a_u_l_t_)
+              Enable (disable) the dead store elimination optimization.
+
+       --MMeexxttrraacctt==_[_o_p_t_i_o_n_[_,_o_p_t_i_o_n_,_._._._]_]
+              Run the subprogram extraction phase to prepare for inlining.
+              The ==lliibb::_f_i_l_e_n_a_m_e option must be used with this switch to name
+              an extract library.  See --MMiinnlliinnee for more details on inlining.
+
+              _s_u_b_p_r_o_g_r_a_m[,_s_u_b_p_r_o_g_r_a_m]
+                     A non-numeric option not containing a period is assumed
+                     to be the name of a subprogram to be extracted.
+
+              nnaammee:_s_u_b_p_r_o_g_r_a_m[,_s_u_b_p_r_o_g_r_a_m]
+                     Specifies the name of a subprogram or subprograms to be
+                     extracted.
+
+              lliibb:_d_i_r_e_c_t_o_r_y
+                     Specifies the name of a directory to contain the
+                     extracted subprograms; this directory will be created if
+                     it does not exist.
+
+              [[ssiizzee::]]_n_u_m_b_e_r
+                     A numeric option is assumed to be a size.  Functions
+                     containing _n_u_m_b_e_r or less statements are extracted.  If
+                     both _n_u_m_b_e_r and _f_u_n_c_t_i_o_n are specified, then functions
+                     matching the given name(s) _o_r meeting the size
+                     requirements, are extracted.
+
+       --MMffrraammee --MMnnooffrraammee _(_d_e_f_a_u_l_t_)
+              Set up (don’t set up) a true stack frame pointer for functions;
+              --MMnnooffrraammee allows slightly more efficient operation when a stack
+              frame is not needed, but some options override --MMnnooffrraammee.
+
+       --MMiinnffoo_[_=_o_p_t_i_o_n_[_,_o_p_t_i_o_n_,_._._._]_]
+              Emit useful information to stderr. The options are:
+
+              aallll       Includes options aacccceell, iinnlliinnee, iippaa, lloooopp, llrree, mmpp,
+                        oopptt, ppaarr, uunniiffiieedd, vveecctt.
+
+              aacccceell     Emit information about accelerator region targeting.
+
+              ccccffff      Append complete CCFF information to the object files.
+
+              ffttnn       Emit Fortran-specific information.
+
+              iinnlliinnee    Emit information about functions extracted and
+                        inlined.
+
+              iinntteennssiittyy Emit compute intensity information about loops.
+
+              iippaa       Emit information about the optimizations enabled by
+                        interprocedural analysis (IPA).
+
+              lloooopp | oopptt
+                        Emit information about loop optimizations.  This
+                        includes information about vectorization and loop
+                        unrolling.
+
+              llrree       Emit information about loop-carried redundancy
+                        elimination.
+
+              mmpp        Emit information about OpenMP parallel regions.
+
+              ppaarr       Emit information about loop parallelization.
+
+              ppffoo       Emit profile feedback information
+
+              ttiimmee | ssttaatt
+                        Emit compilation statistics.
+
+              uunniiffiieedd   Emit information about which routines are selected for
+                        target-specific optimizations using the PGI Unified
+                        Binary.
+
+              vveecctt      Emit information about automatic loop vectorization.
+       With no options, --MMiinnffoo is the same as
+       --MMiinnffoo==aacccceell,,iinnlliinnee,,iippaa,,lloooopp,,llrree,,mmpp,,oopptt,,ppaarr,,uunniiffiieedd,,vveecctt.
+
+       --MMiinnlliinnee_[_=_o_p_t_i_o_n_[_,_o_p_t_i_o_n_,_._._._]_]
+              Pass options to the function inliner. The options are:
+
+              lliibb::_f_i_l_e_n_a_m_e_._e_x_t
+                        Specify an inline library created by a previous
+                        --MMeexxttrraacctt option.  Functions from the specified
+                        library are inlined.  If no library is specified,
+                        functions are extracted from a temporary library
+                        created during an extract prepass.
+
+              eexxcceepptt::_f_u_n_c
+                        Specifies which functions should not be inlined.
+
+              [[nnaammee::]]_f_u_n_c_t_i_o_n
+                        A non-numeric option is assumed to be a function name.
+                        If nnaammee:: is specified, what follows is always the name
+                        of a function.
+
+              [[ssiizzee::]]_n_u_m_b_e_r
+                        A numeric option is assumed to be a size.  Functions
+                        containing _n_u_m_b_e_r or less statements are inlined.  If
+                        both _n_u_m_b_e_r and _f_u_n_c_t_i_o_n are specified, then functions
+                        matching the given name(s) _o_r meeting the size
+                        requirements, are inlined.
+
+              lleevveellss::_n_u_m_b_e_r
+                        _n_u_m_b_e_r of levels of inlining are performed.  The
+                        default is 1.
+
+              rreesshhaappee   For Fortran, the default is to not inline subprograms
+                        with array arguments if the array shape does not match
+                        the shape in the caller. This overrides the default.
+
+       --MMiinnssttrruummeenntt _[_=_o_p_t_i_o_n_]
+              (linux86-64 only) Generate additional code to enable function-
+              level instrumentation.  This option implies --MMiinnffoo==ccccffff and
+              --MMffrraammee.  The option is
+
+              ffuunnccttiioonnss _(_d_e_f_a_u_l_t_)
+
+       --MMiippaa _[_=_o_p_t_i_o_n_[_,_o_p_t_i_o_n_,_._._._]_] --MMnnooiippaa _(_d_e_f_a_u_l_t_)
+              Enable and specify options for InterProcedural Analysis (IPA).
+              This also sets the optimization level to a minimum of 2; see --OO.
+              If no option list is specified, then it is equivalent to
+              --MMiippaa==ccoonnsstt.  The options are:
+
+              aalliiggnn nnooaalliiggnn _(_d_e_f_a_u_l_t_)
+                        Enable (disable) recognition when pointer targets are
+                        all cache-line aligned, allowing better SSE code
+                        generation.
+
+              aarrgg nnooaarrgg _(_d_e_f_a_u_l_t_)
+                        Remove (don’t remove) arguments replaced by
+                        --MMiippaa==ppttrr,,ccoonnsstt.  --MMiippaa==nnooaarrgg implies
+                        --MMiippaa==nnoollooccaallaarrgg.
+
+              ccgg nnooccgg _(_d_e_f_a_u_l_t_)
+                        Generate information for the ppggiiccgg call graph display
+                        tool.  Run ppggiiccgg_e_x_e_c_u_t_a_b_l_e to see the call graph
+                        information.
+
+              ccoonnsstt _(_d_e_f_a_u_l_t_) nnooccoonnsstt
+                        Enable (disable) propagation of constants across
+                        procedure calls.
+
+              ff9900ppttrr nnooff9900ppttrr _(_d_e_f_a_u_l_t_)
+                        Enable (disable) Fortran 90 pointer disambiguation
+                        across procedure calls.
+
+              ffaasstt      Chooses generally optimal --MMiippaa flags for the target
+                        platform; use ppggcccc --MMiippaa --hheellpp to see the equivalent
+                        options.
+
+              ffoorrccee     Force all objects to recompile regardless of whether
+                        IPA information has changed.
+
+              gglloobbaallss nnoogglloobbaallss _(_d_e_f_a_u_l_t_)
+                        Analyze (don’t analyze) which globals are modified by
+                        procedure calls.
+
+              iinnlliinnee::_n  Determine additional functions to inline, allowing up
+                        to _n levels of inlining.  Additional suboptions are:
+
+                        eexxcceepptt::_p_r_o_c
+                            Disables inlining of procedure _p_r_o_c.
+
+                        nnooppffoo
+                            Ignore any profile frequency information from
+                            --MMppffoo when choosing which functions to inline.
+
+                        rreesshhaappee nnoorreesshhaappee _(_d_e_f_a_u_l_t_)
+                            Enable (disable) Fortran inlining with mismatched
+                            array shapes.
+
+              iippooffiillee   Save IPA information in a ..iippoo file instead of the
+                        default of appending the information to the object
+                        file.
+
+              jjoobbss::_n    Use up to _n jobs in parallel to reoptimize object
+                        files.
+
+              kkeeeeppoobbjj _(_d_e_f_a_u_l_t_) nnookkeeeeppoobbjj
+                        Keep (don’t keep) the optimized object files, using
+                        file name mangling, to reduce recompile time in
+                        subsequent application builds.
+
+              lliibbcc nnoolliibbcc _(_d_e_f_a_u_l_t_)
+                        Optimize calls to certain standard C library routines.
+
+              lliibbiinnlliinnee nnoolliibbiinnlliinnee _(_d_e_f_a_u_l_t_)
+                        Allow (don’t allow) inlining from routines in
+                        libraries; --MMiippaa==lliibbiinnlliinnee implies --MMiippaa==iinnlliinnee.
+
+              lliibboopptt nnoolliibboopptt _(_d_e_f_a_u_l_t_)
+                        Allow (don’t allow) recompiling and reoptimizing
+                        routines from libraries with IPA information.
+
+              llooccaallaarrgg nnoollooccaallaarrgg _(_d_e_f_a_u_l_t_)
+                        Enable (disable) feature to externalize local
+                        variables to allow arguments to be replaced by
+                        --MMiippaa==ppttrr.  --MMiippaa==llooccaallaarrgg implies --MMiippaa==aarrgg.
+
+              mmaaiinn::_f_u_n_c Specify a function to serve as a global entry point;
+                        may appear multiple times; disables linking.
+
+              ppttrr nnooppttrr _(_d_e_f_a_u_l_t_)
+                        Enable (disable) pointer disambiguation across
+                        procedure calls.
+
+              ppuurree nnooppuurree _(_d_e_f_a_u_l_t_)
+                        Detect (don’t detect) pure functions.
+
+              qquuiieett     Don’t print out messages about which files are
+                        recompiled at link time.
+
+              rreeaaggggrreeggaattiioonn nnoorreeaaggggrreeggaattiioonn _(_d_e_f_a_u_l_t_)
+                        Enable (disable) global struct reaggregation.  This
+                        can change the order of struct members, or split
+                        structs into multiple structs, to improve memory
+                        locality and cache utilization.
+
+              rreeqquuiirreedd  Return an error condition if IPA is inhibited for any
+                        reason, rather than the default behavior of linking
+                        without IPA optimization.
+
+              ssaaffee::_[_f_u_n_c_t_i_o_n_|_l_i_b_r_a_r_y_]
+                        Declares that the named function, or all functions in
+                        the named library are _s_a_f_e_; a safe procedure does not
+                        call back into the known procedures and does not
+                        change any known global variables.  Without
+                        --MMiippaa==ssaaffee, any unknown procedures will cause IPA to
+                        fail.
+
+              ssaaffeeaallll nnoossaaffeeaallll _(_d_e_f_a_u_l_t_)
+                        Declares that all unknown functions are safe (not
+                        safe); see --MMiippaa==ssaaffee.
+
+              sshhaappee nnoosshhaappee _(_d_e_f_a_u_l_t_)
+                        Perform (don’t perform) Fortran 90 shape propagation.
+
+              ssuummmmaarryy   Only collect IPA summary information when compiling;
+                        this prevents IPA optimization of this file, but
+                        allows optimization for other files linked with this
+                        file.
+
+              vveessttiiggiiaall nnoovveessttiiggiiaall _(_d_e_f_a_u_l_t_)
+                        Remove (don’t remove) functions that are not called.
+
+       --MMllrree_[_=_a_s_s_o_c_|_n_o_a_s_s_o_c_] --MMnnoollrree
+              Enable (disable) loop-carried redundancy elimination.  The assoc
+              option allows expression reassociation, and the noassoc option
+              disallows expression reassociation.
+
+       --MMmmoovvnntt --MMnnoommoovvnntt
+              Force (disable) generation of nontemporal moves.  --MMmmoovvnntt used
+              with --ffaassttssssee can sometimes be faster than --ffaassttssssee alone.  By
+              default nontemporal moves are generated for loops with large
+              loop counts.
+
+       --MMnneeggiinnffoo==_o_p_t_i_o_n_[_,_o_p_t_i_o_n_._._._]
+              Instructs the compiler to produce information on why certain
+              optimizations are not performed.  Use the --MMiinnffoo flag instead.
+
+       --MMnnooooppeennmmpp
+              When --mmpp is present, ignore the OpenMP pragmas.
+
+       --MMnnoossggiimmpp
+              When --mmpp is present, ignore the SGI parallelization pragmas.
+
+       --MMnnoovviinnttrr
+              Do not generate vector intrinsic calls.
+
+       --MMppffii_[_=_o_p_t_i_o_n_]
+              Generate profile feedback instrumentation; this includes extra
+              code to collect run-time statistics to be used in a subsequent
+              compile; --MMppffii must also appear when the program is linked.
+              When the program is run, a profile feedback file _p_g_f_i_._o_u_t will
+              be generated; see --MMppffoo.  The allowed options are:
+
+              iinnddiirreecctt nnooiinnddiirreecctt _(_d_e_f_a_u_l_t_)
+                        Enable (disable) collection of indirect function call
+                        targets, which can be used for indirect function call
+                        inlining.
+
+       --MMppffoo_[_=_o_p_t_i_o_n_[_,_o_p_t_i_o_n_,_._._._]_]
+              Enable profile feedback optimizations; there must be a profile
+              feedback file _p_g_f_i_._o_u_t in the current directory, which contains
+              the result of an execution of the program compiled with --MMppffii.
+              The options are:
+
+              iinnddiirreecctt nnooiinnddiirreecctt _(_d_e_f_a_u_l_t_)
+                        Enable (disable) indirect function call inlining; this
+                        requires a _p_g_f_i_._o_u_t file generated from a binary built
+                        with --MMppffii==iinnddiirreecctt.
+
+              llaayyoouutt _(_d_e_f_a_u_l_t_) nnoollaayyoouutt
+                        Enable (disable) basic block layout to take advantage
+                        of instruction cache locality by keeping hot paths
+                        close together.
+
+              ddiirr==_d_i_r_e_c_t_o_r_y
+                        Specify the directory containing the pgfi.out profile
+                        feedback information file; the default is the current
+                        directory.
+
+       --MMpprree_[_=_a_l_l_] --MMnnoopprree _(_d_e_f_a_u_l_t_)
+              Enable (disable) the partial redundancy elimination
+              optimization.
+
+              aallll       Enable aggressive PRE.
+
+       --MMpprreeffeettcchh_[_=_o_p_t_i_o_n_:_n_] --MMnnoopprreeffeettcchh
+              Add (don’t add) prefetch instructions for those processors that
+              support them (Pentium 4, Opteron); --MMpprreeffeettcchh is default on
+              Opteron; --MMnnoopprreeffeettcchh is default on other processors.  The
+              options are:
+
+              ddiissttaannccee::_d
+                        Set the fetch-ahead distance for prefetch instructions
+                        to _d cache lines.
+
+              nn::_n       Set the maximum number of prefetch instructions to
+                        generate in a loop to _n.
+
+              nnttaa       Use the _p_r_e_f_e_t_c_h_n_t_a instruction.
+
+              ppllaaiinn     Use the _p_r_e_f_e_t_c_h instruction.
+
+              tt00        Use the _p_r_e_f_e_t_c_h_t_0 instruction.
+
+              ww         Allow the AMD-specific _p_r_e_f_e_t_c_h_w instruction.
+
+       --MMpprrooff_[_=_o_p_t_i_o_n_[_,_o_p_t_i_o_n_,_._._._]_]
+              Set performance profiling options.  Use of these options will
+              cause the resulting executable to create a performance profile
+              that can be viewed and analyzed with the PPGGPPRROOFF performance
+              profiler.  In the descriptions below, PGI-style profiling
+              implies compiler-generated source instrumentation.  MPICH-style
+              profiling implies the use of instrumented wrappers for MPI
+              library routines.  The --MMpprrooff options are:
+
+              ccccffff
+
+              ddwwaarrff     Generate limited DWARF symbol information sufficient
+                        for most performance profilers.
+
+              ffuunncc      Perform PGI-style function level profiling.
+
+              hhwwccttss     Generate a profile using event-based sampling of
+                        hardware counters via the PAPI interface (linux86-64
+                        only, PAPI must be installed).
+
+              lliinneess     Perform PGI-style line level profiling.
+
+              hhppmmppii     (PGI CDK only) Perform MPICH-style profiling for the
+                        HP Implies --MMmmppii==hhppmmppii.
+
+              mmppiicchh11    (PGI CDK only) Perform MPICH-style profiling for
+                        MPICH-1.  Implies --MMmmppii==mmppiicchh11.  Use MPIDIR to point
+                        to the MPICH-1 libraries.  This flag is no longer
+                        fully supported.
+
+              mmppiicchh22    (PGI CDK only) Perform MPICH-style profiling for
+                        MPICH-2.  Implies --MMmmppii==mmppiicchh22.  Use MPIDIR to point
+                        to the MPICH-1 libraries.  This flag is no longer
+                        fully supported.
+
+              mmvvaappiicchh11  (PGI CDK only) Perform MPICH-style profiling for
+                        MVAPICH.  Implies --MMmmppii==mmvvaappiicchh11.  Use MPIDIR to point
+                        to the MPICH-1 libraries.  This flag is no longer
+                        fully supported.
+
+              ttiimmee      Generate a profile using time-based instruction-level
+                        statistical sampling. This is equivalent to --ppgg,
+                        except that the profile is saved in a file named
+                        _p_g_p_r_o_f_._o_u_t instead of _g_m_o_n_._o_u_t.
+
+              On Linux systems that have OProfile installed, PPGGPPRROOFF supports
+              collection of performance data without recompilation. Use of
+              --MMpprrooff==ddwwaarrff is useful for this mode of profiling.
+
+       --MMpprrooppccoonndd _(_d_e_f_a_u_l_t_) --MMnnoopprrooppccoonndd
+              Enable (disable) propagation of constant values derived from
+              conditional branches with equality tests.
+
+       --MMqquuaadd Align large objects on quad-word boundaries.
+
+       --MMssaaffee__llaassttvvaall
+              In the case where a scalar is used after a loop, but is not
+              defined on every iteration of the loop, the compiler does not by
+              default parallelize the loop. However, this option tells the
+              compiler it is safe to parallelize the loop.
+
+       --MMssaaffeeppttrr_[_=_o_p_t_i_o_n_[_,_o_p_t_i_o_n_,_._._._]_] --MMnnoossaaffeeppttrr _(_d_e_f_a_u_l_t_)
+              Override (don’t override) data dependence between C pointers and
+              between pointers and variables or arrays.  This option must be
+              used with care since the potential exists for code to be
+              generated that will result in unexpected or incorrect results as
+              is defined by ANSI C. However, when used properly, this option
+              has the potential to greatly enhance the performance of code,
+              especially floating point oriented loops.  Combinations of the
+              _o_p_t_i_o_n_s may be used and interact appropriately.
+
+              aallll       All pointers are assumed not to overlap or conflict
+                        with other data objects; --MMssaaffeeppttrr with no options
+                        implies --MMssaaffeeppttrr==aallll.
+
+              aarrgg | dduummmmyy
+                        C dummy arguments (pointers and arrays) are treated
+                        with the same copyin/copyout semantics as Fortran
+                        dummy arguments.
+
+              aauuttoo | llooccaall
+                        C local or auto variables (pointers and arrays) are
+                        assumed not to overlap or conflict with other data
+                        objects and are independent.
+
+              gglloobbaall    C global or extern variables (pointers and arrays) are
+                        assumed not to overlap or conflict with other data
+                        objects and are independent.
+
+              ssttaattiicc    C static variables (pointers and arrays) are assumed
+                        not to overlap or conflict with other data objects and
+                        are independent.
+
+       --MMssmmaarrtt --MMnnoossmmaarrtt _(_d_e_f_a_u_l_t_)
+              Enable (disable) optional AMD64-specific post-pass instruction
+              scheduling.
+
+       --MMssmmaarrttaalllloocc_=_o_p_t_i_o_n_[_,_._._._] --MMnnoossmmaarrttaalllloocc _(_d_e_f_a_u_l_t_)
+              Add (don’t add) a call to the routine mallopt in the main
+              routine; this can have a dramatic impact on the performance of
+              programs that dynamically allocate memory.  To be effective,
+              this switch must be specified when compiling the file containing
+              the Fortran, C, or C++ main routine.  This is currently only
+              available on 64-bit Linux systems.  The behavior of --MMssmmaarrttaalllloocc
+              can be modified with the following options:
+
+              hhuuggee      Link in the huge page runtime library, so dynamic
+                        memory will be allocated in huge pages.
+
+              hhuuggee::_n    Link in the huge page runtime library and allocate _n
+                        huge pages.
+
+              hhuuggeebbssss   (x86-64 only) Link in the huge page runtime library
+                        and allocate the BSS section (containing uninitialized
+                        static symbols) in huge pages.  This requires that the
+                        huge page runtime library be linked dynamically, so
+                        the --rrppaatthh option for that directory will be added
+                        regardless of the setting of --MMnnoorrppaatthh.
+
+              nnoohhuuggee    Override any previous --MMssmmaarrttaalllloocc==hhuuggee or
+                        --MMssmmaarrttaalllloocc==hhuuggeebbssss switches; do not link in the huge
+                        page runtime library.
+
+       --MMssttrriiddee00 --MMnnoossttrriiddee00 _(_d_e_f_a_u_l_t_)
+              Generate (don’t generate) alternate code for a loop that
+              contains an induction variable whose increment may be zero.
+
+       --MMuunnrroollll_[_=_o_p_t_i_o_n_[_,_o_p_t_i_o_n_._._._]_] --MMnnoouunnrroollll _(_d_e_f_a_u_l_t_)
+              Invoke (don’t invoke) the loop unroller.  This also sets the
+              optimization level to a minimum of 2; see --OO.  The option is one
+              of the following:
+
+              cc::_m       Instructs the compiler to completely unroll loops with
+                        a constant loop count less than or equal to m, a
+                        supplied constant.  If this value is not supplied, the
+                        m count is set to 4.
+
+              nn::_u       Instructs the compiler to unroll _u times, a single-
+                        block loop which is not completely unrolled, or has a
+                        non-constant loop count.  If _u is not supplied, the
+                        unroller computes the number of times a candidate loop
+                        is unrolled.
+
+              mm::_u       Instructs the compiler to unroll _u times, a multi-
+                        block loop which is not completely unrolled, or has a
+                        non-constant loop count.  If _u is not supplied, the
+                        unroller computes the number of times a candidate loop
+                        is unrolled.
+
+              --MMnnoouunnrroollll instructs the compiler not to unroll loops.
+
+       --MMuunnssaaffee__ppaarr__aalliiggnn --MMnnoouunnssaaffee__ppaarr__aalliiggnn
+              Use (don’t use) aligned moves for array loads in parallelized
+              loops as long as the first element of the array is aligned; this
+              is only effective with --MMvveecctt==ssiimmdd.  It is unsafe because there
+              are situations where the array elements allocated to some
+              processors are not aligned.
+
+       --MMvveecctt _[_=_o_p_t_i_o_n_[_,_o_p_t_i_o_n_,_._._._]_] --MMnnoovveecctt _(_d_e_f_a_u_l_t_)
+              Pass options to the internal vectorizer.  This also sets the
+              optimization level to a minimum of 2, the equivalent of --OO; for
+              more information see optimization levels under --OO.  If no option
+              list is specified, then the following vector optimizations are
+              used: assoc,cachesize:_c,nosimd, where _c is the actual cache size
+              of the machine.  The --MMvveecctt options are:
+
+              aallttccooddee _(_d_e_f_a_u_l_t_) nnooaallttccooddee
+                        Enable (disable) alternate code generation for vector
+                        loops, depending on such characteristics as array
+                        alignments and loop counts.
+
+              ffuussee nnooffuussee _(_d_e_f_a_u_l_t_)
+                        Enable (disable) loop fusion to combine adjacent loops
+                        into a single loop.
+
+              pprreeffeettcchh  Use prefetch instructions in loops where profitable.
+
+              ssiimmdd[[::_1_2_8||_2_5_6]] nnoossiimmdd _(_d_e_f_a_u_l_t_)
+                        Use vector SIMD instructions (SSE, AVX) instructions.
+                        The argument may be used to limit usage to 128-bit
+                        SIMD instructions.  Specifying 256-bit SIMD
+                        instructions is only possible for target processors
+                        that support AVX.
+
+              uunniiffoorrmm nnoouunniiffoorrmm _(_d_e_f_a_u_l_t_)
+                        Perform the same optimizations in the vectorized and
+                        residual loops.  This may affect the performance of
+                        the residual loop.
+
+              These options are also supported, but are not recommended for
+              use in new development, except by experienced users, and may be
+              phased out in future releases:
+
+              aassssoocc _(_d_e_f_a_u_l_t_) nnooaassssoocc
+                        Enable (disable) certain associativity conversions
+                        that can change the results of a computation due to
+                        floating point roundoff error differences.  A typical
+                        optimization is to change the order of additions,
+                        which is mathematically correct, but can be
+                        computationally different, due to roundoff error.
+
+              ccaacchheessiizzee::_n_u_m_b_e_r _(_d_e_f_a_u_l_t_=_a_u_t_o_m_a_t_i_c_)
+                        Instructs the vectorizer, when performing cache tiling
+                        optimizations, to assume a cache size of _n_u_m_b_e_r.
+
+              ggaatthheerr _(_d_e_f_a_u_l_t_) nnooggaatthheerr
+                        Enable (disable) vectorization of loops with indirect
+                        array references.
+
+              iiddiioomm nnooiiddiioomm _(_d_e_f_a_u_l_t_)
+                        Enable idiom recognition; this currently has no
+                        effect.
+
+              lleevveellss::_n  Set maximum nest level of loops to optimize.
+
+              ppaarrttiiaall   Enable partial loop vectorization via innermost loop
+                        distribution.
+
+              sshhoorrtt nnoosshhoorrtt _(_d_e_f_a_u_l_t_)
+                        Enable (disable) recognition of short vector
+                        operations that arise from scalar code outside of
+                        loops or within the body of loops.
+
+              ssiizzeelliimmiitt[[::_n_u_m_b_e_r]] nnoossiizzeelliimmiitt _(_d_e_f_a_u_l_t_)
+                        Limit the size of loops that are vectorized; the
+                        default is to attempt to vectorize all loops.
+
+              ssssee nnoossssee _(_d_e_f_a_u_l_t_)
+                        Use (don’t use) SSE, SSE2, 3Dnow, and prefetch
+                        instructions in loops where possible. The sse option
+                        is now deprecated, and the simd option should be used
+                        instead.
+
+              ttiillee nnoottiillee _(_d_e_f_a_u_l_t_)
+                        Enable (disable) loop tiling to optimize for cache
+                        locality.
+
+       --MMnnoovveecctt disables the vectorizer, and is the default.
+
+       --MMzzeerroottrriipp _(_d_e_f_a_u_l_t_) --MMnnoozzeerroottrriipp
+              Include (don’t include) a zero-trip test for loops.  Use
+              --MMnnoozzeerroottrriipp only when all loops are known to execute at least
+              once.
+
+       --mmpp_[_=_o_p_t_i_o_n_]
+              Interpret OpenMP pragmas to explicitly parallelize regions of
+              code for execution by multiple threads on a multi-processor
+              system. Most OpenMP pragmas as well as the SGI parallelization
+              pragmas are supported. See Chapters 5 and 6 of the _P_G_I _U_s_e_r_’_s
+              _G_u_i_d_e for more information on these pragmas.  The options
+              allowed are:
+
+              aalliiggnn nnooaalliiggnn _(_d_e_f_a_u_l_t_)
+                        Modify (don’t modify) default loop iteration
+                        scheduling to align iterations with array references.
+                        The default is to use simple static scheduling.
+
+              aallllccoorreess  Use all available cores when the environment variables
+                        OOMMPP__NNUUMM__TTHHRREEAADDSS and NNCCPPUUSS are not set.  This must be
+                        specified at link time.
+
+              bbiinndd      Bind threads to cores or processors.  This must be
+                        specified at link time.
+
+              nnuummaa nnoonnuummaa
+                        Use (don’t use) libraries to give affinity between
+                        threads and processors; this is useful with NUMA (non-
+                        uniform memory access) parallel architectures, so
+                        memory allocated by a particular thread will be
+                        allocated close to that processor, and will remain
+                        close to that thread.  The default depends on the host
+                        machine.
+
+       --OO_[_l_e_v_e_l_]
+              Set the optimization level.  If --OO is not specified, then the
+              default level is 11 if --gg is not specified, and 00 if --gg is
+              specified.  If a number is not supplied with --OO then the
+              optimization level is set to 22.  The optimization levels and
+              their meanings are as follows:
+
+              --OO00       Sets the optimization level to 0. A basic block is
+                        generated for each statement. No scheduling is done
+                        between statements. No global optimizations are
+                        performed.
+
+              --OO11       Sets the optimization level to 1. Scheduling within
+                        extended basic blocks is performed. No global
+                        optimizations are performed.
+
+              --OO        Sets the optimization level to 2, with no SIMD
+                        vectorization enabled.  All level 1 optimizations are
+                        performed. In addition, traditional scalar
+                        optimizations such as induction recognition and loop
+                        invariant motion are performed by the global
+                        optimizer.
+
+              --OO22       All -O optimizations are performed. In addition, more
+                        advanced optimizations such as SIMD code generation,
+                        cache alignment and partial redundancy elimination are
+                        enabled.
+
+              --OO33       All -O1 and -O2 optimizations are performed. In
+                        addition, this level enables more aggressive code
+                        hoisting and scalar replacement optimizations that may
+                        or may not be profitable.
+
+              --OO44       All -O1, -O2, and -O3 optimizations are performed. In
+                        addition, hoisting of guarded invariant floating point
+                        expressions is enabled.
+
+       --ppgg    (Linux only) Enable gprof-style sample-based profiling; implies
+              --MMffrraammee.
+
+
+DDeebbuuggggiinngg OOppttiioonnss
+       --gg     Generate symbolic debug information. This also sets the
+              optimization level to zero, unless a --OO switch is present on the
+              command line. Symbolic debugging may give confusing results if
+              an optimization level other than zero is selected.  Using --OO00
+              the generated code will be slower than code generated at other
+              optimization levels.
+
+       --ggoopptt  Generate symbolic debug information, without affecting
+              optimizations.  This may give confusing results when debugging
+              with optimizations; it is intended for use with other tools that
+              use the debug information.
+
+       --MMbboouunnddss --MMnnoobboouunnddss _(_d_e_f_a_u_l_t_)
+              Add (don’t add) array bounds checking.  Bounds checking is not
+              applied to a subscripting pointer.
+
+       --MMcchhkkffppssttkk
+              Check for internal consistency of the IA-32 floating point stack
+              in the prologue of a function and after returning from a
+              function or subroutine call. If the PPGGII__CCOONNTTIINNUUEE environment
+              variable is set, the stack will be automatically cleaned up and
+              execution will continue. There is a performance penalty
+              associated with the stack cleanup. If PPGGII__CCOONNTTIINNUUEE is set to
+              verbose, the stack will be automatically cleaned up and
+              execution will continue after a warning message is printed.
+
+       --MMcchhkkssttkk
+              Check the stack for available space upon entry to and before the
+              start of a parallel region. Useful when many private variables
+              are declared.
+
+       --MMccooffff Generate a COFF formatted object.
+
+       --MMddwwaarrff11
+              (IA-32 only) Generate DWARF1 debug information with --gg.
+
+       --MMddwwaarrff22
+              Generate DWARF2 debug information with --gg.
+
+       --MMddwwaarrff33
+              Generate DWARF3 debug information with --gg.
+
+       --MMeellff  Generate an ELF formatted object.
+
+       --MMnnooddwwaarrff
+              Don’t add the default dwarf information.
+
+       --ttrraacceebbaacckk --nnoottrraacceebbaacckk _(_d_e_f_a_u_l_t_)
+              Add debug information for runtime traceback
+
+
+PPrreepprroocceessssoorr OOppttiioonnss
+       --CC     Preserve comments in preprocessed C source files.
+
+       --DD_n_a_m_e_[_=_d_e_f_]
+              Define _n_a_m_e to be _d_e_f in the preprocessor. If _d_e_f is missing, it
+              is assumed to be empty. If the = sign is missing, then _n_a_m_e is
+              defined to be the string 1.
+
+       --ddDD    Print to standard output a list of the macros and their values
+              as defined in the source files, along with the file name and
+              line number where the definitions occur.
+
+       --ddII    Print to standard output a list of all files included by the
+              preprocessor, including the file name and line number where the
+              include line occurred, and the full path of the included file.
+
+       --ddMM    Print to standard output a list of all the macros and their
+              values as defined in the source files, along with the file name
+              and line number where the definitions occur, as well as
+              predefined and command-line macros.
+
+       --ddNN    Like --ddDD, print to standard output a list of macro names, but
+              not their values, as defined in the source files, along with the
+              file name and line number where the definitions occur.
+
+       --EE     Preprocess each ..cc file and send the result to standard output.
+              No compilation, assembly, or linking is performed.
+
+       --II_d_i_r_e_c_t_o_r_y
+              Add _d_i_r_e_c_t_o_r_y to the compiler’s search path for include files.
+              For include files surrounded by << >>, each --II directory is
+              searched followed by the standard area. For include files
+              surrounded by " ", the directory containing the file containing
+              the _#_i_n_c_l_u_d_e directive is searched, followed by the --II
+              directories, followed by the standard area.
+
+       --MM     Generate a list of mmaakkee dependences and print them to stdout.
+
+       --MMccpppp_=_[_[_n_o_]_c_o_m_m_e_n_t_|_m_|_m_d_|_m_m_|_m_m_d_|_m_q_:_t_a_r_g_e_t_|_m_t_:_t_a_r_g_e_t_|_s_u_f_f_i_x_:_s_u_f_f_]
+              Only runs the preprocessor on the input file(s); by default, the
+              output is written to _f_i_l_e.i, unless renamed with the --oo switch.
+              The options are:
+
+              ccoommmmeenntt nnooccoommmmeenntt
+                       Keep (don’t keep) C-style comments in the preprocessed
+                       output.
+
+              iinncclluuddee::_f_i_l_e
+                       Include this file before processing the source file.
+
+              mm        Print makefile dependencies to stdout, a la --MM.
+
+              mmdd       Print makefile dependencies to _f_i_l_e.d, a la --MMDD.
+
+              mmmm       Print makefile dependencies to stdout, ignoring _s_y_s_t_e_m
+                       includes (includes with angle braces), a la --MMMM.
+
+              mmmmdd      Print makefile dependencies to _f_i_l_e.d, ignoring _s_y_s_t_e_m
+                       includes (includes with angle braces), a la --MMMMDD.
+
+              mmqq::’’ttaarrggeett’’
+                       Print makefile dependencies to stdout, a la --MMQQ.
+
+              mmtt::ttaarrggeett
+                       Print makefile dependencies to stdout, a la --MMTT.
+
+              lliinnee     Include line numbers into the preprocessed output.
+
+              ssuuffffiixx::_s_u_f_f
+                       When generating makefile dependencies, name the
+                       dependent file _f_i_l_e_._s_u_f_f; the default is to name the
+                       dependent file _f_i_l_e.o.
+
+       --MMDD    Generate a list of mmaakkee dependences and print them to the file
+              _f_i_l_e_._d, where _f_i_l_e is the root name of the file under
+              compilation.
+
+       --MMMM    Generate a list of mmaakkee dependences and print them to stdout;
+              ignore system includes.
+
+       --MMMMDD   Generate a list of mmaakkee dependences and print them to the file
+              _f_i_l_e_._d, where _f_i_l_e is the root name of the file under
+              compilation. Ignore system includes.
+
+       --MMQQ    Generate a list of mmaakkee dependences and print them to stdout.
+
+       --MMTT    Generate a list of mmaakkee dependences and print them to stdout.
+
+       --MMnnoossttddddeeff
+              Do not predefine any macros to the preprocessor.
+
+       --MMnnoossttddiinncc
+              Do not search in the standard location for include files when
+              those files are not found elsewhere.
+
+       --MMpprreepprroocceessss
+              Run the preprocessor on assembler source files.
+
+       --PP     Preprocess each file and leave the output in a file named _f_i_l_e_._i
+              for each file named _f_i_l_e_._c.
+
+       --uu_n_a_m_e Passed to the linker; generate undefined reference.
+
+       --YYii,,_d_i_r_e_c_t_o_r_y
+              Look in _d_i_r_e_c_t_o_r_y for the interprocedural analyzer.
+
+       --YYpp,,_d_i_r_e_c_t_o_r_y
+              Look in _d_i_r_e_c_t_o_r_y for the preprocessor executable.
+
+
+AAsssseemmbblleerr OOppttiioonnss
+       --WWaa,,_o_p_t_i_o_n_[_,_o_p_t_i_o_n_._._._]
+              Pass each comma-delimited _o_p_t_i_o_n to the assembler.
+
+       --YYaa,,_d_i_r_e_c_t_o_r_y
+              Look in _d_i_r_e_c_t_o_r_y for the assembler executable.
+
+
+LLiinnkkeerr OOppttiioonnss
+       --aacccclliibbss
+              Link-time option to add the accelerator libraries to the link
+              line.
+
+       ----aass--nneeeeddeedd ----nnoo--aass--nneeeeddeedd
+              (Linux only; not supported by all linkers) Passed to the linker.
+              Instructs the linker to only set the DT_NEEDED flag for
+              subsequent shared libraries, requiring those libraries at run
+              time, if they are used to satisfy references.  ----nnoo--aass--nneeeeddeedd
+              restores the default behavior.
+
+       --BBddyynnaammiicc
+              (Linux only) Passed to the linker to specify dynamic binding.
+
+       --BBssttaattiicc
+              (Linux only) Passed to the linker to specify static binding.
+
+       --BBssttaattiicc__ppggii
+              (Linux only) Statically link in the PGI libraries, while using
+              dynamic linking for the system libraries; implies --MMnnoorrppaatthh.
+
+       --gg7777lliibbss
+              (Linux only) Link-time option which allows object files
+              generated by GNU gg7777 (or ggcccc) to be linked in to ppggcccc main
+              programs.
+
+       --ll_l_i_b_r_a_r_y
+              Passed to the linker; load the library lliibb_l_i_b_r_a_r_y..aa from the
+              standard library directory.  See also the --LL option.
+
+       --ll_l_i_b_r_a_r_y
+              Passed to the linker; load the library lliibb_l_i_b_r_a_r_y..aa from the
+              standard library directory.  See also the --LL option.
+
+       --mm     Cause the linker to display a link map.
+
+       --MMeehh__ffrraammee --MMnnooeehh__ffrraammee
+              Add (don’t add) arguments to the link line to preserve the stack
+              frame information for zero-cost exception handling frames.  The
+              default is -Mnoeh_frame unless changed in a site or user rcfile.
+
+       --MMllffss  (32-bit Linux only) Link in the Large File Support routines
+              available on Linux versions later than Red Hat 7.0 or SuSE 7.1.
+              This will support files from Fortran I/O that are larger than
+              2GB. Equivalent to --LL$$PPGGII//lliinnuuxx8866//1144..77//lliibbllff.
+
+       --MMmmppii==_o_p_t_i_o_n
+              (PGI CDK only) --MMmmppii adds the include and library options to the
+              compile and link commands necessary to build an MPI application
+              using MPI libraries installed with the PGI Cluster Development
+              Kit (CDK). --MMmmppii inserts --II$$MMPPIIDDIIRR//iinncclluuddee into the compile
+              line, and --LL$$MMPPIIDDIIRR//lliibb --llffmmppiicchh --llmmppiicchh into the link line.
+              The specified _o_p_t_i_o_n is used to determine whether to select
+              MPICH-1 or MPICH-2 headers and libraries. The base directories
+              for MPICH-1 and MPICH-2 are set in llooccaallrrcc.  The --MMmmppii options
+              are:
+
+              mmppiicchh     Use the MPICH v3.0 libraries; if MPIDIR is set, the
+                        MPI libraries in that directory are used.  mmppiicchh11 Use
+                        the MPICH-1 libraries.  Deprecated; requires that
+                        MPIDIR be set to the MPICH v1 directory.
+
+              mmppiicchh22    Use the MPICH-2 libraries.  Deprecated; requires that
+                        MPIDIR be set to the MPICH v2 directory.
+
+              mmvvaappiicchh11  Use the MVAPICH libraries.  Deprecated; requires that
+                        MPIDIR be set to the MVAPICH directory.
+
+              The user can set the environment variables MMPPIIDDIIRR and MMPPIILLIIBBNNAAMMEE
+              to override the default values for the MPI directory and library
+              name.
+
+       --MMnnoossttaarrttuupp
+              Do not link in the usual startup routine. This routine contains
+              the entry point for the program.
+
+       --MMnnoossttddlliibb
+              Do not link in the standard libraries when linking a program.
+
+       --MMrrppaatthh _(_d_e_f_a_u_l_t_) --MMnnoorrppaatthh
+              The default is to add --rrppaatthh to the link line giving the
+              directories containing the PGI shared objects.  Use --MMnnoorrppaatthh to
+              instruct the driver not to add any --rrppaatthh switches to the link
+              line.
+
+       --MMssccaallaappaacckk
+              (PGI CDK only) Add the Scalapack libraries.
+
+       --ppggccpppplliibbss
+              Link-time option to add the C++ runtime libraries, allowing
+              mixed-language programming.
+
+       --ppggff7777lliibbss
+              Link-time option to add the ppggff7777 runtime libraries, allowing
+              mixed-language programming.
+
+       --ppggff9900lliibbss
+              Link-time option to add the ppggff9900 runtime libraries, allowing
+              mixed-language programming.
+
+       --rr     Passed to the linker; generate a re-linkable object file.
+
+       --rr     Passed to the linker; generate a re-linkable object file.
+
+       --rrppaatthh _d_i_r_e_c_t_o_r_y
+              Passed to the linker to add the directory to the runtime shared
+              library search path.
+
+       --ss     Passed to the linker; strip symbol table information.
+
+       --sshhaarreedd
+              (Linux only) Passed to the linker. Instructs the linker to
+              generate a shared object file (dynamically linked library).
+              Implies --ffppiicc.
+
+       --ssoonnaammee _n_a_m_e
+              (Linux only) Passed to the linker. When creating a shared
+              object, instructs the linker to set the internal DT_SONAME field
+              to the specified name.
+
+       --uu_n_a_m_e Passed to the linker; generate undefined reference.
+
+       ----wwhhoollee--aarrcchhiivvee ----nnoo--wwhhoollee--aarrcchhiivvee
+              (Linux only) Passed to the linker.  Instructs the linker to
+              include all objects in subsequent archive files.
+              ----nnoo--wwhhoollee--aarrcchhiivvee restores the default behavior.
+
+       --WWll,,_o_p_t_i_o_n_[_,_o_p_t_i_o_n_._._._]
+              Pass each comma-delimited _o_p_t_i_o_n to the linker.
+
+       --YYCC,,_d_i_r_e_c_t_o_r_y
+              Look in _d_i_r_e_c_t_o_r_y for the standard compiler library files.
+
+       --YYll,,_d_i_r_e_c_t_o_r_y
+              Look in _d_i_r_e_c_t_o_r_y for the linker.
+
+       --YYll,,_d_i_r_e_c_t_o_r_y
+              Look in _d_i_r_e_c_t_o_r_y for the linker.
+
+       --YYSS,,_d_i_r_e_c_t_o_r_y
+              Look in _d_i_r_e_c_t_o_r_y for the standard system startup object files.
+
+       --YYUU,,_d_i_r_e_c_t_o_r_y
+              Passed to the linker; change library search path.
+
+
+LLaanngguuaaggee OOppttiioonnss
+       --aassmmssuuffffiixx==_s_u_f_f_i_x
+              Define that a file with the given suffix is an assembly language
+              file.
+
+       --BB        Allow C++-style comments in source code; these begin with the
+                 characters ’//’ and continue to the end of the current line.
+                 Such comments are stripped unless you specify the --CC option.
+
+       --cc88xx      Use the C89 standard as the C source language.
+
+       --cc8899      Use the C89 standard as the C source language.
+
+       --cc99xx      Use the C99 standard as the C source language.
+
+       --cc9999      Use the C99 standard as the C source language.
+
+       --ccssuuffffiixx==_s_u_f_f_i_x
+                 Define that a file with the given suffix is a C source file.
+
+       --MMaassmmkkeeyywwoorrdd --MMnnooaassmmkkeeyywwoorrdd _(_d_e_f_a_u_l_t_)
+                 Allow (don’t allow) the aassmm keyword in C source code. The
+                 format is: aassmm((""_<_t_e_x_t_>""))
+
+       --MMbbuuiillttiinn _(_d_e_f_a_u_l_t_) --MMnnoobbuuiillttiinn
+                 Compile (don’t compile) with math subroutine builtin support,
+                 which causes selected math library routines to be inlined.
+
+       --MMddaalliiggnn _(_d_e_f_a_u_l_t_) --MMnnooddaalliiggnn
+                 Align (don’t align) doubles in structures on 8-byte
+                 boundaries.  --MMnnooddaalliiggnn may lead to data alignment
+                 exceptions.
+
+       --MMddoollllaarr==_c_h_a_r
+                 Set the character used to replace dollar signs in names to be
+                 _c_h_a_r.  Default is an underscore (_).
+
+       --MMffccoonn    Treat non-suffixed floating point constants as ffllooaatt, rather
+                 than ddoouubbllee.  This may improve the performance of single-
+                 precision code.
+
+       --MMlliibbssuuffffiixx==_s_u_f_f_i_x
+                 Define that a file with the given suffix is an object library
+                 file.
+
+       --MMllllaalliiggnn --MMnnoollllaalliiggnn _(_d_e_f_a_u_l_t_)
+                 Align (don’t align) long longs or INTEGER*8 in structures or
+                 common blocks on 8-byte boundaries.  --MMnnoollllaalliiggnn is the
+                 default, and this is a change beginning with release 4.0.
+                 Releases prior to 4.0 aligned long longs on 8-byte
+                 boundaries.
+
+       --MMmm112288 --MMnnoomm112288 _(_d_e_f_a_u_l_t_)
+                 (C only) Recognize the datatypes __m128, __m128d and __m128i.
+
+       --MMoobbjjssuuffffiixx==_s_u_f_f_i_x
+                 Define that a file with the given suffix is a binary object
+                 file.
+
+       --MMsscchhaarr _(_d_e_f_a_u_l_t_)
+                 Specify that the cchhaarr type is signed by default; see --MMuucchhaarr.
+
+       --MMssiiggnneexxtteenndd _(_d_e_f_a_u_l_t_) --MMnnoossiiggnneexxtteenndd
+                 Sign extend (don’t sign extend) when a narrowing conversion
+                 overflows.  For example, when --MMssiiggnneexxtteenndd is in effect and
+                 an integer containing the value 65535 is converted to a
+                 short, the value of the short will be -1.  ANSI C specifies
+                 that the result of such conversions are undefined.
+
+       --MMssiinnggllee --MMnnoossiinnggllee _(_d_e_f_a_u_l_t_)
+                 Suppress (don’t suppress) the ANSI-specified conversion of
+                 ffllooaatt to ddoouubbllee when passing arguments to a function with no
+                 prototype in scope.  --MMssiinnggllee may result in faster code when
+                 single precision is used a lot, but is non-ANSI compliant.
+
+       --MMuucchhaarr   Specify that the cchhaarr type is unsigned by default; see
+                 --MMsscchhaarr.
+
+       --XXaa       ANSI mode: Specify that the compiled language should conform
+                 to all ANSI features.
+
+       --XXcc       Conformance mode: Specify that the compiled language should
+                 conform to all ANSI features, but warnings may be produced
+                 about some extensions.
+
+       --XXss       Standard mode: specify that the compiled language should
+                 conform to K&R C.  This also implies --aannssii==ttrraaddiittiioonnaall.
+
+       --XXtt       Specify that the compiled language should conform to K&R C.
+                 The compiler may produce warnings for semantics where ANSI C
+                 and K&R C conflict.  This also implies --aannssii==ttrraaddiittiioonnaall.
+
+
+TTaarrggeett--ssppeecciiffiicc OOppttiioonnss
+       --aacccc   Enable OpenACC pragmas and directives to explicitly parallelize
+              regions of code for execution by accelerator devices.  See the
+              --ttaa flag to select target accelerators for which to compile.
+              The options are:
+
+              bbuuiillddlliibb nnoobbuuiillddlliibb _(_d_e_f_a_u_l_t_)
+                        Compile every routine for the device, as if it had a
+                        routine seq directive.
+
+       --KKiieeeeee --KKnnooiieeeeee _(_d_e_f_a_u_l_t_)
+              Perform floating-point operations in strict conformance with the
+              IEEE 754 standard.  Some optimizations are disabled with --KKiieeeeee,
+              and a more accurate math library is used.  The default --KKnnooiieeeeee
+              uses faster but very slightly less accurate methods.
+
+       --KKttrraapp_=_[_o_p_t_i_o_n_,_[_o_p_t_i_o_n_]_._._._]
+              Controls the behavior of the processor when exceptions occur.
+              Possible _o_p_t_i_o_n_s include
+
+              aalliiggnn   Trap on memory alignment errors, currently ignored.
+
+              ddeennoorrmm  Trap on denormalized operands.
+
+              ddiivvzz    Trap on divide by zero.
+
+              ffpp      Trap on floating point exceptions.
+
+              iinneexxaacctt Trap on inexact result.
+
+              iinnvv     Trap on invalid operation.
+
+              nnoonnee _(_d_e_f_a_u_l_t_)
+                      Disable all traps.
+
+              oovvff     Trap on floating point overflow.
+
+              uunnff     Trap on floating point underflow.
+       --KKttrraapp is only processed when compiling a main function/program.
+       --KKttrraapp==ffpp is equivalent to --KKttrraapp==ddiivvzz,,iinnvv,,oovvff.  These options
+       correspond to the processor’s exception mask bits.  Normally, the
+       processor’s exception mask bits are on, meaning floating-point
+       exceptions are masked; the processor recovers from the exception and
+       continues.  If a mask bit is off (unmasked) and the corresponding
+       exception occurs, execution terminates with floating point exception
+       (Linux FPE signal).
+
+       --MMddaazz --MMnnooddaazz
+              Enable (disable) mode to treat denormalized floating point
+              numbers as zero.  --MMddaazz is default for --ttpp pp77 --mm6644 targets;
+              --MMnnooddaazz is default otherwise.
+
+       --MMfflluusshhzz --MMnnoofflluusshhzz
+              Set floating point operations to flush-to-zero mode; --MMfflluusshhzz is
+              set at optimization level --OO22 and higher.
+
+       --MMffppaapppprrooxx _[_=_o_p_t_i_o_n_[_,_o_p_t_i_o_n_,_._._._]_] --MMnnooffppaapppprrooxx _(_d_e_f_a_u_l_t_)
+              Perform (don’t perform) certain single-precision floating point
+              operations using low-precision approximation.  This can be very
+              dangerous; the low-precision approximations are much faster than
+              the full precision computation, but the results will be
+              different.  This option should be used only with the utmost
+              care.  The options are
+
+              ddiivv       Approximate single precision floating point division.
+
+              rrssqqrrtt     Approximate single precision floating point reciprocal
+                        square root.
+
+              ssqqrrtt      Approximate single precision floating point square
+                        root.
+       With no options, --MMffppaapppprrooxx will approximate all three operations.
+
+       --MMffppmmiissaalliiggnn --MMnnooffppmmiissaalliiggnn
+              Allow (don’t allow) vector arithmetic instructions with memory
+              operands that are not aligned on 16-byte boundaries.
+
+       --MMffpprreellaaxxeedd _[_=_o_p_t_i_o_n_[_,_o_p_t_i_o_n_,_._._._]_] --MMnnooffpprreellaaxxeedd _(_d_e_f_a_u_l_t_)
+              Perform (don’t perform) certain floating point operations using
+              relaxed precision when it improves speed.  The options are
+
+              ddiivv       Perform divide using relaxed precision.
+
+              iinnttrriinnssiicc Perform certain intrinsic functions using relaxed
+                        precision.
+
+              oorrddeerr nnoooorrddeerr
+                        Allow (don’t allow) expression reordering, including
+                        factoring such as computing a*b+a*c as a*(b+c).
+
+              rreecciipp     Perform reciprocal operations using relaxed precision.
+
+              rrssqqrrtt     Perform reciprocal square root (1/sqrt) using relaxed
+                        precision.
+
+              ssqqrrtt      Perform square root using relaxed precision.
+       With no options, --MMffpprreellaaxxeedd will choose to generate relaxed precision
+       code for those operations that generate a significant performance
+       improvement, depending on the target processor.
+
+       --MMffuunncc3322 _(_d_e_f_a_u_l_t_) --MMnnooffuunncc3322
+              Align (don’t align) functions on 32 byte boundaries.
+
+       --MMggccccbbuuggss
+              Match the behavior of certain bugs in ggcccc.
+
+       --MMlloonnggbbrraanncchh --MMnnoolloonnggbbrraanncchh _(_d_e_f_a_u_l_t_)
+              Enable (disable) long branches.
+
+       --MMlloooopp3322 --MMnnoolloooopp3322 _(_d_e_f_a_u_l_t_)
+              Align (don’t align) innermost loops on 32 byte boundaries for
+              -tp barcelona.
+
+       --MMrreegg__ssttrruucctt__rreettuurrnn --MMnnoorreegg__ssttrruucctt__rreettuurrnn _(_d_e_f_a_u_l_t_)
+              Return (don’t return) small struct/union function values in
+              registers.  This switch only affects 32-bit code.
+
+       --MMsseeccoonndd__uunnddeerrssccoorree --MMnnoosseeccoonndd__uunnddeerrssccoorree _(_d_e_f_a_u_l_t_)
+              Add (don’t add) a second underscore to the name of a Fortran
+              global if its name already contains an underscore. This option
+              is useful for maintaining compatibility with gg7777, which adds a
+              second underscore to such symbols by default.
+
+       --MMwwrriittaabbllee--ssttrriinnggss
+              Store string constants in the writable data segment.
+
+       --mm3322   Compile for 32-bit target.
+
+       --mm6644   Compile for 64-bit target.
+
+       --mmccmmooddeell==_s_m_a_l_l_|_m_e_d_i_u_m
+              (AMD64 and IA32/EM64T only) Use the memory model that limits
+              objects to less than 2GB (small) or allows data sections to be
+              larger than 2GB (medium); implies -Mlarge_arrays
+
+       --ppcc _v_a_l
+              The IA-32 architecture implements a floating-point stack using 8
+              80-bit registers. Each register uses bits 0-63 as the
+              significand, bits 64-78 for the exponent, and bit 79 is the sign
+              bit. This 80-bit real format is the default format (called the
+              extended format).  When values are loaded into the floating
+              point stack they are automatically converted into extended real
+              format.  The precision of the floating point stack can be
+              controlled, however, by setting the precision control bits (bits
+              8 and 9) of the floating control word appropriately. In this
+              way, the programmer can explicitly set the precision to standard
+              IEEE double using 64 bits, or to single precision using 32 bits.
+              The default precision setting is system dependent.  If you use
+              -pc to alter the precision setting for a routine, the main
+              program must be compiled with the same value for -pc.  The
+              command line option --ppcc _v_a_l lets the programmer set the
+              compiler’s precision preference. Valid values for _v_a_l are:
+                  32 single precision
+                  64 double precision
+                  80 extended precision
+              Operations performed exclusively on the floating point stack
+              using extended precision, without storing into or loading from
+              memory, can cause problems with accumulated values within the
+              extra 16 bits of extended precision values.  This can lead to
+              answers, when rounded, that do not match expected results.
+
+       --ttaa==_t_a_r_g_e_t
+              Specify the type of the accelerator to which to target
+              accelerator regions; accepted values are
+
+              --ttaa==tteessllaa
+                      Compile the accelerator regions for a CUDA-enabled
+                      NVIDIA GPU.  Additional suboptions valid after --ttaa==tteessllaa
+                      are:
+
+                      aannaallyyssiiss
+                          Perform the analysis, but do not generate GPU code.
+
+                      nnooffmmaa
+                          Do not generate fused multiply-add operations.
+
+                      cccc11xx
+                          Generate code for the lowest compute capability 1.x
+                          device that supports all the features required in
+                          the program.
+
+                      cccc1100
+                          Generate code for a device with compute capability
+                          1.0.
+
+                      cccc1111
+                          Generate code for a device with compute capability
+                          1.1.
+
+                      cccc1122
+                          Generate code for a device with compute capability
+                          1.2.
+
+                      cccc1133
+                          Generate code for a device with compute capability
+                          1.3.
+
+                      cccc11++
+                          Generate code compute capabilities 1.x and higher.
+
+                      cccc22xx
+                          Generate code for the lowest compute capability 2.x
+                          device that supports all the features required in
+                          the program.
+
+                      cccc2200
+                          Generate code for a device with compute capability
+                          2.0.
+
+                      cccc22++
+                          Generate code for compute capabilities 2.x and
+                          higher.
+
+                      cccc33xx
+                          Generate code for the lowest compute capability 3.x
+                          device that supports all the features required in
+                          the program.
+
+                      cccc3300
+                          Generate code for a device with compute capability
+                          3.0.
+
+                      cccc33++
+                          Generate code for compute capabilities 3.x and
+                          higher.
+
+                      ccuuddaa55..55
+                          Use the CUDA 5.5 toolkit to build the GPU code.
+
+                      55..55 An alias for --MMccuuddaa==ccuuddaa55..55.
+
+                      ccuuddaa66..00
+                          Use the CUDA 6.0 toolkit to build the GPU code.
+
+                      66..00 An alias for --MMccuuddaa==ccuuddaa66..00.
+
+                      ffaassttmmaatthh
+                          Enable the fast math library, which includes faster,
+                          but lower precision, implementations of certain math
+                          and intrinsic functions.
+
+                      ffeerrmmii
+                          Generate code for a Fermi (compute capability 2.0)
+                          device.
+
+                      ffeerrmmii++
+                          Generate code for a Fermi architecture and higher
+                          compute capability devices.
+
+                      fflluusshhzz nnoofflluusshhzz _(_d_e_f_a_u_l_t_)
+                          Enable (disable) flush-to-zero mode on the GPU.
+
+                      kkeeeeppbbiinn
+                          Keep the generated CUDA binary, with a .bin suffix.
+
+                      kkeeeeppggppuu
+                          Keep the generated CUDA GPU source files, with a
+                          .gpu suffix.
+
+                      kkeeeeppppttxx
+                          Keep the generated portable assembly files, with a
+                          .ptx suffix.
+
+                      kkeepplleerr
+                          Generate code for the lowest capability Kepler
+                          (compute capability 3.x) device that supports all
+                          the features required in the program.
+
+                      kkeepplleerr++
+                          Generate code for a Kepler architecture and higher
+                          compute capability devices.
+
+                      mmaaxxrreeggccoouunntt::_n
+                          Set the maximum number of registers to use in the
+                          generated GPU code.
+
+                      ppiinn Pin the host memory for data clause; this will not
+                          work for apps that use multiple devices.
+
+                      tteessllaa
+                          Generate code for the lowest capability Tesla
+                          (compute capability 1.x) device that supports all
+                          the features required in the program.
+
+                      tteessllaa++
+                          Generate code for Tesla architecture and higher
+                          compute capability devices.
+
+                      ttiimmee
+                          Link with a profile library to collect simple timing
+                          information for accelerator regions.
+              Note that multiple compute capabilities can be specified, and
+              one version will be generated for each capability specified.
+              The default is equivalent to --ttaa==tteessllaa::ffeerrmmii++..
+
+              --ttaa==nnvviiddiiaa
+                      This flag is equivalent to --ttaa==tteessllaa, and has all the
+                      same suboptions.
+
+              --ttaa==rraaddeeoonn
+                      Compile the accelerator regions for an AMD Radeon GPU.
+                      Additional suboptions valid after --ttaa==rraaddeeoonn are:
+
+                      ttaahhiittii
+                          Generate code for AMD Tahiti architecture GPUs.
+
+                      ccaappeevveerrddee
+                          Generate code for AMD Cape Verde architecture GPUs.
+
+                      ssppeeccttrree
+                          Generate code for AMD Spectre architecture APUs.
+
+                      bbuuffffeerrccoouunntt::_n
+                          Specify the number of OpenCL buffers to use for the
+                          device; the same value must be used on all OpenACC
+                          source files to generate useful code.  The default
+                          value is 3.
+
+                      kkeeeepp
+                          Keep the generated OpenCL source files.
+              Multiple AMD GPU architectures can be specified.  The default is
+              --ttaa==rraaddeeoonn::ttaahhiittii.
+
+              --ttaa==hhoosstt
+                      Compile the accelerator regions to run on the host
+                      processor.
+
+              The default in the absence of the --ttaa flag is to ignore the
+              accelerator directives and compile for the host.  Multiple
+              targets are allowed, such as --ttaa==tteessllaa::hhoosstt, in which case code
+              is generated for the NVIDIA GPU as well as the host for each
+              accelerator region.
+
+       --ttpp==_t_a_r_g_e_t
+              Specify the type of the target processor; possibilities are
+
+              --ttpp==barcelona
+                      AMD Barcelona processor
+
+              --ttpp==bulldozer
+                      AMD Bulldozer processor
+
+              --ttpp==core2
+                      Intel core2 processor
+
+              --ttpp==istanbul
+                      AMD Istanbul architecture Opteron processor
+
+              --ttpp==k8  AMD Opteron or Athlon-64
+
+              --ttpp==nehalem
+                      Intel Nehalem architecture Core processor
+
+              --ttpp==p7  IA32/EM64T processor
+
+              --ttpp==penryn
+                      Intel Penryn architecture Pentium processor
+
+              --ttpp==piledriver
+                      AMD Piledriver architecture Opteron processor
+
+              --ttpp==px  Blended code generation that will work on any
+                      x86-compatible processor
+
+              --ttpp==sandybridge
+                      Intel SandyBridge architecture Core processor
+
+              --ttpp==shanghai
+                      AMD Shanghai architecture Opteron processor
+
+              --ttpp==x64 Equivalent to -tp=k8,p7.
+
+              The default in the absence of the --ttpp flag is to compile for the
+              type of CPU on which the compiler is running.  Where available,
+              --ttpp==_t_a_r_g_e_t_-_6_4 is equivalent to --mm6644 --ttpp==_t_a_r_g_e_t_, and
+              --ttpp==_t_a_r_g_e_t_-_3_2 is equivalent to --mm3322 --ttpp==_t_a_r_g_e_t_.  When 32- and
+              64-bit targets are available for a target, --ttpp==_t_a_r_g_e_t by itself
+              will compile for a 32-bit or 64-bit target depending on whether
+              the 32-bit or 64-bit compiler is invoked from your command line
+              path.
+
+
+FFIILLEESS
+       aa..oouutt       executable output file
+       ppggppff..oouutt    Profile feedback data file; see --MMppffii
+       ppggpprrooff..oouutt  PGPROF output file; see --MMpprrooff
+       ffiillee_._a      library of object files
+       ffiillee_._c      C source file
+       ffiillee_._i      C source file after preprocessing
+       ffiillee_._i_p_a    InterProcedural Analyzer (IPA) file
+       ffiillee_._i_p_o    InterProcedural Analyzer (IPA) file
+       ffiillee_._o      object file
+       ffiillee_._s      assembler source file
+       ..mmyyppggccccrrcc   You may add custom switches or make other additions to ppggcccc
+                   by creating a file named ..mmyyppggccccrrcc in your home directory.
+
+       The installation of this version of the compiler resides in
+       $$PPGGII//_t_a_r_g_e_t//1144..77//; other versions may coexist in $$PPGGII//_t_a_r_g_e_t//_r_e_l_e_a_s_e//.
+       $$PPGGII is an environment variable that points to the root of the compiler
+       installation directory. If $$PPGGII is not set, the default is //uussrr//ppggii.
+       The _t_a_r_g_e_t is one of the following:
+       lliinnuuxx8866     for 32-bit IA32 Linux targets
+       lliinnuuxx8866--6644  for 64-bit AMD64 or IA32/EM64T Linux targets
+
+       The compiler installation subdirectories are:
+       bbiinn//        compiler and tool executables and configuration (rc) files
+       iinncclluuddee//    compiler include files
+       lliibb//        libraries and object files
+       lliibbllff//      libraries and object files
+
+SSEEEE AALLSSOO
+       ppggCCCC (1), ppggff7777 (1), ppggffoorrttrraann (1), ppgghhppff (1), ppggpprrooff (1), ppggddbbgg (1),
+       and the _P_G_I _U_s_e_r_’_s _G_u_i_d_e.
+
+DDIIAAGGNNOOSSTTIICCSS
+       The compiler produces information and error messages as it translates
+       the input program. The linker and assembler may issue their own error
+       messages.
+
+
+
+                                   June 2014                           pgcc(1)
