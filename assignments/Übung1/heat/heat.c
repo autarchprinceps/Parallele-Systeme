@@ -32,6 +32,7 @@ static int window_number = -1;
 // initialize h-array
 static void init_data(int xsize, int ysize, double h[xsize + 2][ysize + 2]) {
 	// initialize data
+	// TODO # omp parallel? for
 	for(int i = 0; i < xsize + 2; i++)
 		for(int j = 0; j < ysize + 2; j++)
 			h[i][j] = HEAT_MIN;
@@ -47,6 +48,7 @@ static void heat_source(int xsize, int ysize, double h[xsize + 2][ysize + 2]) {
 	sizey = ysize / 4;
 
 	// time-invariant constant values
+	// TODO # omp parallel? for
 	for(int i = 0; i < sizex; i++)
 		for(int j = 0; j < sizey; j++) {
 			h[1 * xsize / 4 - (sizex / 2) + i][1 * ysize / 4 - (sizey / 2) + j] = HEAT_MAX;
@@ -60,11 +62,13 @@ static void heat_source(int xsize, int ysize, double h[xsize + 2][ysize + 2]) {
 // finite difference method (Laplace)
 static void update(int xsize, int ysize, double h[xsize + 2][ysize + 2], double h_new[xsize + 2][ysize + 2]) {
 	// calculate new value based upon neighbor values
+	// TODO # omp parallel? for
 	for(int i = 1; i <= xsize; i++)
 		for(int j = 1; j <= ysize; j++)
 			h_new[i][j] = 0.25 * (h[i - 1][j] + h[i + 1][j] + h[i][j - 1] + h[i][j + 1]);
 
 	// update array with new values
+	// TODO # omp parallel? for
 	for(int i = 1; i <= xsize; i++)
 		for(int j = 1; j <= ysize; j++)
 			h[i][j] = h_new[i][j];
@@ -198,7 +202,7 @@ int main(int argc, char **argv) {
 
 	ttotal = gettime() - ttotal;
 	printf("total time: %.6f\n", ttotal);
-	printf("checksum  : %lu\n", checksum (xsize, ysize, h));
+	printf("checksum  : %lu\n", checksum(xsize, ysize, h));
 
 	// finish graphics
 	if(graphics)
