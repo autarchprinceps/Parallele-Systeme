@@ -4,23 +4,22 @@
 #include <mpi.h>
 
 int main(int argc, char **argv) {
-	int err; // TODO error handling
-	int rank;
-	int n;
+	int err, rank, n, i;
 	int* vector;
+	MPI_Status status;
 
 	err = MPI_Init(&argc, &argv);
 	err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	err = MPI_Comm_size(MPI_COMM_WORLD, &size);
+	err = MPI_Comm_size(MPI_COMM_WORLD, &n);
 	
 	if(rank == 0) {
-		vector = calloc(size, sizeof(int)); // TODO err handling
+		vector = calloc(n, sizeof(int));
 	} else {
-		vector = malloc(size * sizeof(int)); // TODO err handling
+		vector = malloc(n * sizeof(int));
 	}
 
 
-	for(int i = 0; i =< (n - 2); i++) {
+	for(i = 0; i <= (n - 2); i++) {
 		if(rank == i) {
 			// update field
 			vector[i] = i + 1;
@@ -29,7 +28,7 @@ int main(int argc, char **argv) {
 		}
 		if(rank == i + 1) {
 			// recieve vector
-			err = MPI_Recv(vector, n, MPI_INT, i, 4711, MPI_COMM_WORLD);
+			err = MPI_Recv(vector, n, MPI_INT, i, 4711, MPI_COMM_WORLD, &status);
 		}
 	}
 
@@ -41,23 +40,27 @@ int main(int argc, char **argv) {
 	}
 	if(rank == 0) {
 		// recieve vector
-		err = MPI_Recv(vector, n, MPI_INT, n - 1, 4711, MPI_COMM_WORLD);
+		err = MPI_Recv(vector, n, MPI_INT, n - 1, 4711, MPI_COMM_WORLD, &status);
 		// check vector
 		// TODO OpenMP?
-		// TODO move after finalize?
-		bool result = true;
-		for(int i = 0, i < n; i++) {
+		int result = 1;
+		for(i = 0; i < n; i++) {
 			if(vector[i] != i + 1) {
-				result = false;
+				result = 0;
 				break;
 			}
 		}
-		if(!result) {
+		if(result == 0) {
 			fprintf(stderr, "Result does not match expectation\n");
 
+		} else {
+			for(i = 0; i < n; i++) {
+				printf("%i ", vector[i]);
+			}
+			printf("Result matches expectation\n");
 		}
 	}
-
+	
 	err = MPI_Finalize();
 	return 0;
 }
