@@ -188,7 +188,6 @@ int main(int argc, char **argv) {
 	if(graphics)
 		display (xsize, ysize, h);
 
-	int t;
 	#pragma omp parallel
 	for(int t = 0; t < niter; t++) {
 		// display every niter step
