@@ -68,7 +68,6 @@ static void update(int xsize, int ysize, double h[xsize + 2][ysize + 2], double 
 			h_new[i][j] = 0.25 * (h[i - 1][j] + h[i + 1][j] + h[i][j - 1] + h[i][j + 1]);
 
 	// update array with new values
-	// TODO wait for display, if using task
 	#pragma omp for
 	for(int i = 1; i <= xsize; i++)
 		for(int j = 1; j <= ysize; j++)
@@ -79,7 +78,7 @@ static void update(int xsize, int ysize, double h[xsize + 2][ysize + 2], double 
 /*============================================================================*/
 // display current heat distribution
 static void display(int xsize, int ysize, double h[xsize + 2][ysize + 2]) {
-	#pragma omp parallel for // Mit Absicht parallel for
+	#pragma omp parallel for
 	for(int i = 1; i <= xsize; i++)
 		for(int j = 1; j <= ysize; j++) {
 			unsigned int icolor;
@@ -193,16 +192,14 @@ int main(int argc, char **argv) {
 
 	for(int t = 0; t < niter; t++) {
 		// display every niter step
+		if((graphics > 0) && (t % graphics == (graphics - 1))) {
+			t1 = gettime();
+			display(xsize, ysize, h);
+			printf("time step %8d of %8d: %8.6f s per time step\n", (t + 1), niter, (t1 - t0) / graphics);
+			t0 = gettime();
+		}
 		#pragma omp parallel
 		{
-			#pragma omp single
-			if((graphics > 0) && (t % graphics == (graphics - 1))) {
-				t1 = gettime();
-				display(xsize, ysize, h);
-				printf("time step %8d of %8d: %8.6f s per time step\n", (t + 1), niter, (t1 - t0) / graphics);
-				t0 = gettime();
-			}
-
 			// compute new values
 			update(xsize, ysize, h, h_new);
 

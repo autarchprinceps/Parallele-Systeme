@@ -188,24 +188,22 @@ int main(int argc, char **argv) {
 	if(graphics)
 		display (xsize, ysize, h);
 
+	int t;
+	#pragma omp parallel
 	for(int t = 0; t < niter; t++) {
 		// display every niter step
-		#pragma omp parallel
-		{
-			#pragma omp task
-			if((graphics > 0) && (t % graphics == (graphics - 1))) {
-				t1 = gettime();
-				display(xsize, ysize, h);
-				printf("time step %8d of %8d: %8.6f s per time step\n", (t + 1), niter, (t1 - t0) / graphics);
-				t0 = gettime();
-			}
-
-			// compute new values
-			update(xsize, ysize, h, h_new);
-
-			// permanent heat source
-			heat_source(xsize, ysize, h);
+		#pragma omp task
+		if((graphics > 0) && (t % graphics == (graphics - 1))) {
+			t1 = gettime();
+			display(xsize, ysize, h);
+			printf("time step %8d of %8d: %8.6f s per time step\n", (t + 1), niter, (t1 - t0) / graphics);
+			t0 = gettime();
 		}
+		// compute new values
+		update(xsize, ysize, h, h_new);
+
+		// permanent heat source
+		heat_source(xsize, ysize, h);
 	}
 
 	/*--------------------------------------------------------------------------*/
