@@ -1,26 +1,14 @@
-/*==============================================================================
-  
-   Purpose          :
-   Author           : Rudolf Berrendorf
-                      Computer Science Department
-                      Bonn-Rhein-Sieg University of Applied Sciences
-	              53754 Sankt Augustin, Germany
-                      rudolf.berrendorf@h-brs.de
-  
-==============================================================================*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <libFHBRS.h>
 
-//==============================================================================
+int main(int argc, char **argv) {
+	int err, rank, n;
 
-int main(int argc, char **argv)
-{
-
-  return 0;
+	err = MPI_Init(&argc, &argv);
+	err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	err = MPI_Comm_size(MPI_COMM_WORLD, &n);	
+	// TODO
+	err = MPI_Finalize();
+	return 0;
 }
-
-/*============================================================================*
- *                             that's all folks                               *
- *============================================================================*/
