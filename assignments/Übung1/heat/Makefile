@@ -1,8 +1,8 @@
-CC	= icc -openmp
+CC	= kinst-ompp-papi icc -openmp
 #CC	= gcc -fopenmp
 CFLAGS	= -O2 -g -I/usr/local/include -std=c99 -Wall
 LDFLAGS	= -L/usr/local/lib -lFHBRS -lX11 -lm
-DEBUGFLAGS = -pg 
+DEBUGFLAGS = -g -pg 
 
 default:: heat.exe
 
