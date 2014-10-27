@@ -15,8 +15,8 @@ clean::
 heat.exe: heat.o
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-debug.v1: heat.v1.c
+gprof.v1/debug.v1: heat.v1.c
 	$(CC) $(CFLAGS) $(DEBUGFLAGS) -o $@ $^ $(LDFLAGS)
 
-debug.v2: heat.v2.c
+gprof.v2/debug.v2: heat.v2.c
 	$(CC) $(CFLAGS) $(DEBUGFLAGS) -o $@ $^ $(LDFLAGS)
