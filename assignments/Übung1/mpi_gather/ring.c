@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <libFHBRS.h>
 #include <mpi.h>
 
 int main(int argc, char **argv) {
@@ -14,9 +13,15 @@ int main(int argc, char **argv) {
 	sendbuf = malloc(sizeof(int));
 	*sendbuf = rank + 1;
 	if(rank == 0) {
-		recbuf = malloc(sizeof(int));
+		recbuf = malloc(sizeof(int) * n);
 	}
 	MPI_Gather(sendbuf, 1, MPI_INT, recbuf, 1, MPI_INT, 0, MPI_COMM_WORLD);
 	err = MPI_Finalize();
+	if(rank == 0) {
+		for(int i = 0; i < n; i++) {
+			printf("%i ", recbuf[i]);
+		}
+		printf("\n");
+	}
 	return 0;
 }
