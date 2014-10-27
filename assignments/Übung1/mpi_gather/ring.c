@@ -5,7 +5,8 @@
 
 int main(int argc, char **argv) {
 	int err, rank, n;
-	int* recbuf, sendbuf;
+	int* recbuf;
+	int* sendbuf;
 	
 	err = MPI_Init(&argc, &argv);
 	err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);
