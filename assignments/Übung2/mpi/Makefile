@@ -1,8 +1,8 @@
 ########################################################################
 
-MPICC		= mpicc
-CFLAGS		= -O2 -std=c99 -I/usr/local/include -Wall
-LDLIBS		= -L/usr/local/lib -lFHBRS -lm
+MPICC		= mpecc
+CFLAGS		= -O2 -std=c99 -I/usr/local/include -Wall -mpilog
+LDLIBS		= -L/usr/local/lib -lFHBRS -lm -mpilog
 
 ########################################################################
 

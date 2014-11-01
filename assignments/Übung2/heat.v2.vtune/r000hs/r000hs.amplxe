@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+ <rdmgr>
+  <timestamp type="u64_t">1414406096</timestamp>
+  <hostname type="string">wr0</hostname>
+  <os type="string">linux</os>
+  <product type="string">Intel® VTune™ Amplifier XE 2013 Update 17</product>
+  <buildNumber type="s32_t">353306</buildNumber>
+  <logicalCPUCount type="s32_t">48</logicalCPUCount>
+  <CPUFrequency type="s64_t">2701000000</CPUFrequency>
+  <collectionTimeBegin type="u64_t">1414406096</collectionTimeBegin>
+  <collectionTimeEnd type="u64_t">1414406118</collectionTimeEnd>
+  <variables>
+   <at type="string">hs</at>
+  </variables>
+ </rdmgr>
+</root>
