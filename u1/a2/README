@@ -1,5 +1,7 @@
 do a "module load intel-icc" once a session to get the Intel compiler loaded
 
+move either heat.v1.c or heat.v2.c to heat.c to choose which version to use
+
 make : compile the program
 make run : run the program with a test data set
 
