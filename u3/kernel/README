@@ -1,0 +1,57 @@
+Program arguments
+=================
+submit a program argument as one number: kernelnumber_datasetselection
+
+where "kernelnumber" is your assigned kernel number and data set
+selection chooses one out of three possible data sets (see below). You
+must specify these two numbers to the program as one number with
+format "xy" where x is the kernel number (from 1-24) and y is the data
+set number (from 1-3).  Example: you kernel number is 15. Then you
+must run the program three times with program arguments 151, 152, 153,
+respectively (i.e. "mkjobs.py your_port kernel.exe 151 152 153").
+
+
+Your kernel:
+============
+Inside kernel.f your find the code that gets executed for your kernel
+if you search for "subroutine kernelx" inside the file.
+
+All kernels are executed 10 times.
+
+You must compile the source file with "make". This generates the
+executable file "kernel.exe" that produces the memory acesses. Ignore
+any compiler warnings during compilation.
+
+
+
+
+Each number after the kernel number in the command line call selects a parameter set for data sizes:
+
+Parameter settings for ndim1 (all kernels other than kernel 4,6,21):
+1) ndim1=1024*32
+2) ndim1=1024*256
+3) ndim1=4*1000*1000
+
+Parameter settings for ndim1 (kernel 4):
+1) ndim1=1024*32
+2) ndim1=1024*128
+3) ndim1=1024*512
+
+Parameter settings for ndim2 (kernel 6):
+1) ndim2=128
+2) ndim2=512
+3) ndim2=1000
+
+Parameter settings for ndim1 (kernel 21):
+1) ndim1=1024*32
+2) ndim1=1024*64
+3) ndim1=1024*128
+
+
+
+Run times:
+==========
+approx. time for largest configuration:
+all kernels other than given below: < 60 minutes
+kernel 8,13,14,23: <4 hours
+kernel 4,15,18,21: < 12 hours

@@ -1,0 +1,36 @@
+This directory contains subdirectories with sources for trace
+generation for a command, and cache simulations based upon these
+traces.  Each subdirectory contains one application program and
+everything else you need for such a simulation. In your subdirectory
+you must compile your program with "make" before ou start simulations.
+
+There are two python scripts in this directory that may help you:
+
+1) mkjobs.py
+
+This script generates all job submission commands necessary for a
+bunch of cache simulations. You must specify in a call to mkjobs.py:
+- starting port (the script assigns from that port sucessive jobs successive ports)
+- the executable you want to generate a trace for
+- program arguments to the executable
+Example:
+prompt> mkjobs.py 11000 bubblesort.exe 30000 50000 80000 > runjobs.sh
+
+Run the mkjobs.py script in your subdirectory. The generated submission calls
+(in the generated script runjobs.sh) can then be submitted to the batch system with:
+
+prompt> sh runjobs.sh
+
+Be aware that a lot of jobs get started (approx. 200)!
+
+
+2) evaluation.py
+
+Start this script in the generated output directory. This script goes
+through all generated simulation result files, applies the cost model,
+and produces in a csv-file the result (spent cycles in the simulated
+program with the specific cache parameters). Call this script with the
+program size arguments you specified in the mkjobs.py script.
+Example:
+
+prompt> python evaluation.py 10000 30000 80000
