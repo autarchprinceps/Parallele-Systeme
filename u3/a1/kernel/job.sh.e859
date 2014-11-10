@@ -1,0 +1,62 @@
++ module load intel-icc
+++ /usr/bin/modulecmd bash load intel-icc
++ eval CC=icc ';export' 'CC;CPATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/ipp/include:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mkl/include:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/include' ';export' 'CPATH;CXX=icpc' ';export' 'CXX;F77=ifort' ';export' 'F77;FC=ifort' ';export' 'FC;IDB_HOME=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/bin/intel64' ';export' 'IDB_HOME;INCLUDE=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mkl/include' ';export' 'INCLUDE;INTEL_LICENSE_FILE=/usr/local/Intel/parallel_studio_xe_2013_sp1/licenses:/opt/intel/licenses' ';export' 'INTEL_LICENSE_FILE;LANGUAGE_TERRITORY=en_US' ';export' 'LANGUAGE_TERRITORY;LD_LIBRARY_PATH=/opt/intel/mic/coi/host-linux-release/lib:/opt/intel/mic/myo/lib:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/ipp/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/compiler/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mkl/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/lib/mic:/usr/local/torque/lib:' ';export' 'LD_LIBRARY_PATH;LIBRARY_PATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/compiler/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/lib/intel64' ';export' 'LIBRARY_PATH;LOADEDMODULES=intel-icc/2015-64' ';export' 'LOADEDMODULES;MANPATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/man/en_US:/usr/local/man:' ';export' 'MANPATH;MIC_LD_LIBRARY_PATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/compiler/lib/mic:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mpirt/lib/mic:/opt/intel/mic/coi/device-linux-release/lib:/opt/intel/mic/myo/lib:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/lib/mic' ';export' 'MIC_LD_LIBRARY_PATH;MIC_LIBRARY_PATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/lib/mic' ';export' 'MIC_LIBRARY_PATH;NLSPATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/compiler/lib/intel64/locale/%l_%t/%N:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mkl/lib/intel64/locale/%l_%t/%N:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/debugger/intel64/locale/%l_%t/%N' ';export' 'NLSPATH;PATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/bin/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/bin/intel64_mic:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/debugger/gui/intel64:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/local/torque/bin:/usr/local/maui/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/probin2s/bin' ';export' 'PATH;TBBROOT=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb' ';export' 'TBBROOT;_LMFILES_=/usr/local/modules/modulesfiles/intel-icc/2015-64' ';export' '_LMFILES_;'
+++ CC=icc
+++ export CC
+++ CPATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/ipp/include:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mkl/include:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/include
+++ export CPATH
+++ CXX=icpc
+++ export CXX
+++ F77=ifort
+++ export F77
+++ FC=ifort
+++ export FC
+++ IDB_HOME=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/bin/intel64
+++ export IDB_HOME
+++ INCLUDE=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mkl/include
+++ export INCLUDE
+++ INTEL_LICENSE_FILE=/usr/local/Intel/parallel_studio_xe_2013_sp1/licenses:/opt/intel/licenses
+++ export INTEL_LICENSE_FILE
+++ LANGUAGE_TERRITORY=en_US
+++ export LANGUAGE_TERRITORY
+++ LD_LIBRARY_PATH=/opt/intel/mic/coi/host-linux-release/lib:/opt/intel/mic/myo/lib:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/ipp/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/compiler/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mkl/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/lib/mic:/usr/local/torque/lib:
+++ export LD_LIBRARY_PATH
+++ LIBRARY_PATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/compiler/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/lib/intel64
+++ export LIBRARY_PATH
+++ LOADEDMODULES=intel-icc/2015-64
+++ export LOADEDMODULES
+++ MANPATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/man/en_US:/usr/local/man:
+++ export MANPATH
+++ MIC_LD_LIBRARY_PATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/compiler/lib/mic:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mpirt/lib/mic:/opt/intel/mic/coi/device-linux-release/lib:/opt/intel/mic/myo/lib:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/lib/mic
+++ export MIC_LD_LIBRARY_PATH
+++ MIC_LIBRARY_PATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/lib/mic
+++ export MIC_LIBRARY_PATH
+++ NLSPATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/compiler/lib/intel64/locale/%l_%t/%N:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mkl/lib/intel64/locale/%l_%t/%N:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/debugger/intel64/locale/%l_%t/%N
+++ export NLSPATH
+++ PATH=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/bin/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/bin/intel64_mic:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/debugger/gui/intel64:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/local/torque/bin:/usr/local/maui/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/probin2s/bin
+++ export PATH
+++ TBBROOT=/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb
+++ export TBBROOT
+++ _LMFILES_=/usr/local/modules/modulesfiles/intel-icc/2015-64
+++ export _LMFILES_
++ echo 'Running with PORT=24016,PROGRAM=./kernel.exe,PROGRAM_ARGS=11,DIR=11/l2usize,FILE=8m.txt,DINERO_ARGS=-l1-dsize 64k -l2-usize 8m -l3-usize 8m -l1-dbsize 64 -l2-ubsize 64 -l3-ubsize 64 -l1-dassoc 2 -l2-uassoc 16 -l3-uassoc 32'
+Running with PORT=24016,PROGRAM=./kernel.exe,PROGRAM_ARGS=11,DIR=11/l2usize,FILE=8m.txt,DINERO_ARGS=-l1-dsize 64k -l2-usize 8m -l3-usize 8m -l1-dbsize 64 -l2-ubsize 64 -l3-ubsize 64 -l1-dassoc 2 -l2-uassoc 16 -l3-uassoc 32
++ cd /home/probin2s/Parallele-Systeme/u3/a1/kernel
++ mkdir -p output/11/l2usize
++ cd output/11/l2usize
++ export PIN_ON_SOCKET=24016
++ PIN_ON_SOCKET=24016
++ ulimit -s 10000000
++ export PATH=/usr/local/pin:/usr/local/pin_appl:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/bin/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/bin/intel64_mic:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/debugger/gui/intel64:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/local/torque/bin:/usr/local/maui/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/probin2s/bin
++ PATH=/usr/local/pin:/usr/local/pin_appl:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/bin/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/bin/intel64_mic:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/debugger/gui/intel64:/usr/lib64/qt-3.3/bin:/usr/local/bin:/usr/local/torque/bin:/usr/local/maui/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/probin2s/bin
++ export LD_LIBRARY_PATH=/usr/local/pin/source/tools/MyPinTool/obj-intel64:/opt/intel/mic/coi/host-linux-release/lib:/opt/intel/mic/myo/lib:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/ipp/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/compiler/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mkl/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/lib/mic:/usr/local/torque/lib:
++ LD_LIBRARY_PATH=/usr/local/pin/source/tools/MyPinTool/obj-intel64:/opt/intel/mic/coi/host-linux-release/lib:/opt/intel/mic/myo/lib:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/ipp/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/compiler/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/mkl/lib/intel64:/usr/local/Intel/parallel_studio_xe_2013_sp1/composer_xe_2015.0.090/tbb/lib/mic:/usr/local/torque/lib:
++ sleep 10
++ pin -t memtrace -- /home/probin2s/Parallele-Systeme/u3/a1/kernel/./kernel.exe 11
++ dineroIV -l1-dsize 64k -l2-usize 8m -l3-usize 8m -l1-dbsize 64 -l2-ubsize 64 -l3-ubsize 64 -l1-dassoc 2 -l2-uassoc 16 -l3-uassoc 32
++ memtrace_client.exe localhost 24016
+
+real	0m39.222s
+user	0m12.412s
+sys	0m4.076s
++ exit
