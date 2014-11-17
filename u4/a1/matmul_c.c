@@ -43,9 +43,10 @@ static double a3[N][N], b3[N][N], c3[N][N];
 
 static void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
 	for(int i=0; i<n; i++)
-		for(int j=0; j<n; j++)
-			for(int k=0; k<n; k++)
-				a[i][j] += b[i][k] * c[k][j];
+		for(int k=0; k<n; k++)
+			double tmp = b[i][k];
+			for(int j=0; j<n; j++)	
+				a[i][j] += tmp * c[k][j];
 }
 
 

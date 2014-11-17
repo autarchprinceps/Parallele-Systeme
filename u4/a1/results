@@ -1,0 +1,16 @@
+optimized 6000 - 9000 ?!
+
+Order:
+orig jki 130
+ijk 164.2 160.8
+jik 436.6 434.7
+ikj 573.8 562.1
+kij 527.5 522.7
+kji 140.6 137.6
+
+taking ikj
+loop invariant
+
+
+Unrolling
+Blocking
