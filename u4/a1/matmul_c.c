@@ -41,12 +41,11 @@ static double a3[N][N], b3[N][N], c3[N][N];
 /*===========================================================================*/
 // apply your optimizations to this version
 
-static void matmul(int n, double a[n][n], double b[n][n], double c[n][n])
-{
-  for(int j=0; j<n; j++)
-    for(int k=0; k<n; k++)
-      for(int i=0; i<n; i++)
-	a[i][j] += b[i][k] * c[k][j];
+static void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
+	for(int i=0; i<n; i++)
+		for(int j=0; j<n; j++)
+			for(int k=0; k<n; k++)
+				a[i][j] += b[i][k] * c[k][j];
 }
 
 
