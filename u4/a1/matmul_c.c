@@ -53,7 +53,6 @@ static void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
 					double tmp = b[i][k];
 					printf("tmp done\n");
 					for(int j = jj; j < min(jj+B, n); j++) {
-						printf("%i", j);
 						a[i][j] += tmp * c[k][j];
 						/*a[i][j+1] += tmp * c[k][j+1];
 						a[i][j+2] += tmp * c[k][j+2];
