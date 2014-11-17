@@ -48,9 +48,9 @@ static void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
 	for(int kk = 0; kk < n; kk += B)
 		for(int jj = 0; jj < n; jj += B)
 			for(int i = 0; i < n; i++)
-				for(int k = 0; k< min(kk+B, n); k++) {
+				for(int k = kk; k < min(kk+B, n); k++) {
 					double tmp = b[i][k];
-					for(int j = 0; j < min(jj+B, n); j++) {	
+					for(int j = jj; j < min(jj+B, n); j++) {	
 						a[i][j] += tmp * c[k][j];
 						/*a[i][j+1] += tmp * c[k][j+1];
 						a[i][j+2] += tmp * c[k][j+2];
