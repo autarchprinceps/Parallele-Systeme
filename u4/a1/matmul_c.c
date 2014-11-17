@@ -62,7 +62,7 @@ static void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
 						a[i][j+6] += tmp * c[k][j+6];
 						a[i][j+7] += tmp * c[k][j+7];
 						a[i][j+8] += tmp * c[k][j+8];*/
-						printf(".");
+						// printf(".");
 					}
 					printf("\n");
 				}
