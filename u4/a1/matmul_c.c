@@ -41,10 +41,11 @@ static double a3[N][N], b3[N][N], c3[N][N];
 /*===========================================================================*/
 // apply your optimizations to this version
 
-#define min(x,y) x < y ? x : y
+#define min(x,y) ((x) < (y) ? (x) : (y))
 #define B 64
 
 static void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
+	printf("%i\n", min(1, 2));
 	for(int kk = 0; kk < n; kk += B)
 		for(int jj = 0; jj < n; jj += B)
 			for(int i = 0; i < n; i++)
