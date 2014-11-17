@@ -51,7 +51,7 @@ static void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
 				for(int k = kk; k < min(kk+B, n); k++) {
 					printf("%i %i %i %i ", kk, jj, i, k);
 					double tmp = b[i][k];
-					printf("tmp done\n")
+					printf("tmp done\n");
 					for(int j = jj; j < min(jj+B, n); j++) {
 						printf("%i", j);
 						a[i][j] += tmp * c[k][j];
