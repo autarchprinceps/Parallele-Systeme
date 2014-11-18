@@ -18,7 +18,12 @@ Unrolling
 
 Blocking
 without unrolling
-64 
+32 
+64 1144.8
+99 
+with unrolling
+9 55 
+
 
 TODO ?
 Array Merging
