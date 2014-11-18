@@ -34,7 +34,7 @@ extern void dgemm_(char *, char *,int *, int *, int *,double *, double *,int *, 
 
 // three matrix sets
 static double a1[N][N], b1[N][N], c1[N][N];
-static double a2[N][N], b2[N][N], c2[N][N];
+static double a2[N][N], pad1, b2[N][N], pad2, c2[N][N];
 static double a3[N][N], b3[N][N], c3[N][N];
 
 

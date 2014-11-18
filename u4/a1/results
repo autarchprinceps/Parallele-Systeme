@@ -26,7 +26,7 @@ with unrolling
 3 3 434.9
 
 Loop invariant minimum (blocking 64, w/o unrolling) 
-
+1314.7
 
 TODO ?
 Array Merging
