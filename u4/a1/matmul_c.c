@@ -42,7 +42,7 @@ static double a3[N][N], b3[N][N], c3[N][N];
 // apply your optimizations to this version
 
 #define min(x,y) ((x) < (y) ? (x) : (y))
-#define B 55
+#define B 3
 
 static void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
 	for(int kk = 0; kk < n; kk += B)
@@ -50,16 +50,16 @@ static void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
 			for(int i = 0; i < n; i++)
 				for(int k = kk; k < min(kk+B, n); k++) {
 					double tmp = b[i][k];
-					for(int j = jj; j < min(jj+B, n); j += 9) {
+					for(int j = jj; j < min(jj+B, n); j += 3) {
 						a[i][j] += tmp * c[k][j];
 						a[i][j+1] += tmp * c[k][j+1];
 						a[i][j+2] += tmp * c[k][j+2];
-						a[i][j+3] += tmp * c[k][j+3];
+						/*a[i][j+3] += tmp * c[k][j+3];
 						a[i][j+4] += tmp * c[k][j+4];
 						a[i][j+5] += tmp * c[k][j+5];
 						a[i][j+6] += tmp * c[k][j+6];
 						a[i][j+7] += tmp * c[k][j+7];
-						a[i][j+8] += tmp * c[k][j+8];
+						a[i][j+8] += tmp * c[k][j+8];*/
 					}
 				}
 }

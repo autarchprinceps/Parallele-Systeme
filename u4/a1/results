@@ -18,11 +18,12 @@ Unrolling
 
 Blocking
 without unrolling
-32 
+32 1004.2
 64 1144.8
-99 
+99 1142.9 
+
 with unrolling
-9 55 
+3 3 
 
 
 TODO ?
