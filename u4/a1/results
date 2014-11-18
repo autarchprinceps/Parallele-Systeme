@@ -28,6 +28,11 @@ with unrolling
 Loop invariant minimum (blocking 64, w/o unrolling) 
 1314.7
 
+Padding
+Inter Var
+1315.2
+
 TODO ?
 Array Merging
 Padding
+Better blocking + unrolling

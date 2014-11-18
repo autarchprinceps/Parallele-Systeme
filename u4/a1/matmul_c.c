@@ -34,7 +34,7 @@ extern void dgemm_(char *, char *,int *, int *, int *,double *, double *,int *, 
 
 // three matrix sets
 static double a1[N][N], b1[N][N], c1[N][N];
-static double a2[N][N], pad1, b2[N][N], pad2, c2[N][N];
+double a2[N][N], b2[N][N], c2[N][N];
 static double a3[N][N], b3[N][N], c3[N][N];
 
 
@@ -44,14 +44,14 @@ static double a3[N][N], b3[N][N], c3[N][N];
 #define min(x,y) ((x) < (y) ? (x) : (y))
 #define B 64
 
-static void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
+void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
 	for(int kk = 0; kk < n; kk += B) {
 		int mink = min(kk+B, n);
 		for(int jj = 0; jj < n; jj += B) {
 			int minj = min(jj+B, n);
 			for(int i = 0; i < n; i++) {			
 				for(int k = kk; k < mink; k++) {
-					double tmp = b[i][k];
+					register double tmp = b[i][k];
 					for(int j = jj; j < minj; j++) {
 						a[i][j] += tmp * c[k][j];
 					}
