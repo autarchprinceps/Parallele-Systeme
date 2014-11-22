@@ -6,6 +6,8 @@
 # change to job submit directory
 cd $PBS_O_WORKDIR
 
+module load acml-sp
+
 ./matmul_c.exe
 
 exit
