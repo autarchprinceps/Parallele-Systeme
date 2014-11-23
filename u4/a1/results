@@ -24,7 +24,7 @@ without unrolling
 
 with unrolling
 3 3 434.9
-111 3 
+111 3 1635.3 1634.8
 111 9 
 
 Loop invariant minimum (blocking 64, w/o unrolling) 
