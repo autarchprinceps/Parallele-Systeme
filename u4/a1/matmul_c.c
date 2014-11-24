@@ -52,7 +52,7 @@ static void matmul(int n, double a[n][n], double b[n][n], double c[n][n]) {
 			for(int i = 0; i < n; i++) {			
 				for(int k = kk; k < mink; k++) {
 					double tmp = b[i][k];
-					double crow[] = c[k];
+					double* crow = c[k];
 					for(int j = jj; j < minj; j += 3) {
 						a[i][j] += tmp * crow[j];
 						a[i][j+1] += tmp * crow[j+1];
