@@ -88,7 +88,7 @@
 
 /* current iteration (you need that for dynamic algorithms
    to know what was scheduled last) */
-static int current_iteration;
+static volatile int current_iteration;
 
 
 /*============================================================================*/ 
@@ -224,7 +224,7 @@ bool self_scheduling(int *start_iteration, int *end_iteration, int n, int p, int
 
 /*============================================================================*/ 
 /* dynamic guided self scheduling */ 
-static int remaining_iterations;
+static volatile int remaining_iterations;
 
 void gss_setup(int n, int p, int iam) {
 	remaining_iterations = n;
@@ -253,8 +253,8 @@ typedef struct {
 	int end;
 } pair;
 
-static pair* sched_list;
-static bool running;
+static volatile pair* sched_list;
+static volatile bool running;
 
 void factoring_setup(int n, int p, int iam) {
 	current_iteration = 0;
