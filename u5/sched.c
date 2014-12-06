@@ -249,17 +249,25 @@ bool gss(int *start_iteration, int *end_iteration, int n, int p, int iam) {
 /*============================================================================*/ 
 /* dynamic factoring (simplified version 1) */ 
 typedef struct {
-	unsigned int start;
-	unsigned int end;
-	bool free;
+	int start;
+	int end;
 } pair;
 
 static volatile pair* sched_list;
 static volatile bool running;
 
 void factoring_setup(int n, int p, int iam) {
+	current_iteration = 0;
 	remaining_iterations = n;
 	sched_list = malloc(sizeof(pair)*p);
+	int tmp_position = n - remaining_iterations;
+	int c = upper_gauss(remaining_iterations, 2 * p);
+	remaining_iterations -= p * c;
+	for(int j = 0; j < p; j++) {
+		sched_list[j].start = tmp_position;
+		tmp_position += c;
+		sched_list[j].end = tmp_position - 1;
+	}
 	running = true;
 }
 
@@ -267,29 +275,24 @@ bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) 
 	bool result = false;
 	#pragma omp critical
 	if(running) {
-		for(unsigned int i = 1; i < p; i++) {
-			if(sched_list[i].free) {
-				sched_list[i].free = false;
-				*start_iteration = sched_list[i].start;
-				*end_iteration = sched_list[i].end;
-				result = true;
-				break;
-			}
-		}
-		if(!result) {
-			unsigned int tmp_position = n - remaining_iterations;
-			unsigned int c = upper_gauss(remaining_iterations, 2 * p);
+		if(current_iteration < p) {
+			*start_iteration = sched_list[current_iteration].start;
+			*end_iteration = sched_list[current_iteration].end;
+			result = true;
+			current_iteration++;
+		} else {
+			int tmp_position = n - remaining_iterations;
+			int c = upper_gauss(remaining_iterations, 2 * p);
 			remaining_iterations -= p * c;
 			if(remaining_iterations > 0) {
-				for(unsigned int j = 0; j < p; j++) {
-					sched_list[j].free = true;
+				for(int j = 0; j < p; j++) {
 					sched_list[j].start = tmp_position;
 					tmp_position += c;
 					sched_list[j].end = tmp_position - 1;
 				}
-				sched_list[0].free = false;
 				*start_iteration = sched_list[0].start;
 				*end_iteration = sched_list[0].end;
+				current_iteration = 1;
 			} else {
 				*start_iteration = tmp_position;
 				*end_iteration = n - 1;
