@@ -273,7 +273,7 @@ bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) 
 				return true;
 			}
 		}
-		if(remaining_iterations < n) {
+		if(remaining_iterations > 0) {
 			int tmp_position = n - remaining_iterations;
 			int c = upper_gauss(remaining_iterations, 2 * p);
 			remaining_iterations -= p * c;
