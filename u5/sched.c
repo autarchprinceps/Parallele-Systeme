@@ -211,8 +211,9 @@ void self_scheduling_setup(int n, int p, int iam) {
 
 bool self_scheduling(int *start_iteration, int *end_iteration, int n, int p, int iam) {
 	bool result = false;
+	int tmp;
 	#pragma omp atomic
-	int tmp = current_iteration++;
+	tmp = current_iteration++;
 	if(tmp < n) {
 		*start_iteration = *end_iteration = tmp;
 		result = true;
