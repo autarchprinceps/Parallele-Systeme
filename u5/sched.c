@@ -210,16 +210,16 @@ void self_scheduling_setup(int n, int p, int iam) {
 }
 
 bool self_scheduling(int *start_iteration, int *end_iteration, int n, int p, int iam) {
+	bool result = false;
 	#pragma omp critical
 	{
 		if(current_iteration < n) {
 			*start_iteration = *end_iteration = current_iteration;
 			current_iteration++;
-			return true;
-		} else {
-			return false;
+			result = true;
 		}
 	}
+	return result;
 }
 
 
@@ -232,18 +232,18 @@ void gss_setup(int n, int p, int iam) {
 }
 
 bool gss(int *start_iteration, int *end_iteration, int n, int p, int iam) {
+	bool result = false;
 	#pragma omp critical
 	{
 		if(remaining_iterations > 0) {
-			int c = (remaining_iterations + p - 1) / p
+			int c = (remaining_iterations + p - 1) / p;
 			*start_iteration = n - remaining_iterations;
-			*end_iteration = start_iteration* + c - 1;
+			*end_iteration = *start_iteration + c - 1;
 			remaining_iterations -= c;
-			return true;
-		} else {
-			return false;
+			result = true;
 		}
 	}
+	return result;
 }
 
 
@@ -263,6 +263,7 @@ void factoring_setup(int n, int p, int iam) {
 }
 
 bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) {
+	bool result = false;
 	#pragma omp critical
 	{
 		for(int i = 1; i < p; i++) {
@@ -270,10 +271,11 @@ bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) 
 				sched_list[i].alloc = 1;
 				*start_iteration = sched_list[i].start;
 				*end_iteration = sched_list[i].end;
-				return true;
+				result = true;
+				break;
 			}
 		}
-		if(remaining_iterations > 0) {
+		if(!result && remaining_iterations > 0) {
 			int tmp_position = n - remaining_iterations;
 			int c = upper_gauss(remaining_iterations, 2 * p);
 			remaining_iterations -= p * c;
@@ -286,11 +288,10 @@ bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) 
 			sched_list[0].alloc = 1;
 			*start_iteration = sched_list[0].start;
 			*end_iteration = sched_list[0].end;
-			return true;
-		} else {
-			return false;
+			result = true;
 		}
 	}
+	return result;
 }
 
 
