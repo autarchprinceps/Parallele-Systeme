@@ -211,12 +211,11 @@ void self_scheduling_setup(int n, int p, int iam) {
 
 bool self_scheduling(int *start_iteration, int *end_iteration, int n, int p, int iam) {
 	bool result = false;
-	#pragma omp critical
-	{
-		if(current_iteration < n) {
-			*start_iteration = *end_iteration = current_iteration++;
-			result = true;
-		}
+	#pragma omp atomic
+	int tmp = current_iteration++;
+	if(tmp < n) {
+		*start_iteration = *end_iteration = tmp;
+		result = true;
 	}
 	return result;
 }
