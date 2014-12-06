@@ -205,57 +205,92 @@ bool blockcyclic_scheduling (int *start_iteration, int *end_iteration, int n, in
 /*============================================================================*/ 
 /* dynamic self scheduling */ 
 
-void
-self_scheduling_setup (int n, int p, int iam) 
-{
-  current_iteration = 0;
-
-  /* your code comes here */
+void self_scheduling_setup(int n, int p, int iam) {
+	current_iteration = 0;
 }
 
-bool self_scheduling (int *start_iteration, int *end_iteration, int n, int p, int iam) 
-{
-  /* your code comes here */
-
-  return false;
+bool self_scheduling(int *start_iteration, int *end_iteration, int n, int p, int iam) {
+	#pragma omp critical
+	{
+		if(current_iteration < n) {
+			start_iteration* = end_iteration* = current_iteration;
+			current_iteration++;
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
 
 /*============================================================================*/ 
 /* dynamic guided self scheduling */ 
+static volatile int remaining_iterations;
 
-
-void
-gss_setup (int n, int p, int iam) 
-{
-  current_iteration = 0;
-
-  /* your code comes here */
+void gss_setup(int n, int p, int iam) {
+	remaining_iterations = n;
 }
 
-bool gss (int *start_iteration, int *end_iteration, int n, int p, int iam) 
-{  
-  /* your code comes here */
-
-  return false;
+bool gss(int *start_iteration, int *end_iteration, int n, int p, int iam) {
+	#pragma omp critical
+	{
+		if(remaining_iterations > 0) {
+			int c = (remaining_iterations + p - 1) / p
+			start_iteration* = n - remaining_iterations;
+			end_iteration* = start_iteration* + c - 1;
+			remaining_iterations -= c;
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
 
 /*============================================================================*/ 
 /* dynamic factoring (simplified version 1) */ 
+typedef struct {
+	int start;
+	int end;
+	int alloc;
+} pair;
 
-void
-factoring_setup (int n, int p, int iam) 
-{
-  current_iteration = 0;
-  /* your code comes here */
+static volatile pair* sched_list;
+
+void factoring_setup(int n, int p, int iam) {
+	remaining_iterations = n;
+	sched_list = calloc(sizeof(pair),p);
 }
 
-bool factoring (int *start_iteration, int *end_iteration, int n, int p, int iam) 
-{
-  /* your code comes here */
-
-  return false;
+bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) {
+	#pragma omp critical
+	{
+		for(int i = 1; i < p; i++) {
+			if(sched_list[i].alloc == 0) {
+				sched_list[i].alloc = 1;
+				start_iteration* = sched_list[i].start;
+				end_iteration* = sched_list[i].end;
+				return true;
+			}
+		}
+		if(remaining_iterations < n) {
+			int tmp_position = n - remaining_iterations;
+			int c = upper_gauss(remaining_iterations, 2 * p);
+			remaining_iterations -= p * c;
+			for(int j = 0; j < p; j++) {
+				sched_list[j].alloc = 0;
+				sched_list[j].start = tmp_position;
+				tmp_position += c;
+				sched_list[j].end = tmp_position - 1;
+			}
+			sched_list[0].alloc = 1;
+			start_iteration* = sched_list[0].start;
+			end_iteration* = sched_list[0].end;
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
 
 
