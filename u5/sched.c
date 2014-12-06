@@ -214,8 +214,7 @@ bool self_scheduling(int *start_iteration, int *end_iteration, int n, int p, int
 	#pragma omp critical
 	{
 		if(current_iteration < n) {
-			*start_iteration = *end_iteration = current_iteration;
-			current_iteration++;
+			*start_iteration = *end_iteration = current_iteration++;
 			result = true;
 		}
 	}
@@ -250,44 +249,52 @@ bool gss(int *start_iteration, int *end_iteration, int n, int p, int iam) {
 /*============================================================================*/ 
 /* dynamic factoring (simplified version 1) */ 
 typedef struct {
-	int start;
-	int end;
-	int alloc;
+	unsigned int start;
+	unsigned int end;
+	bool free;
 } pair;
 
 static volatile pair* sched_list;
+static volatile bool running;
 
 void factoring_setup(int n, int p, int iam) {
 	remaining_iterations = n;
-	sched_list = calloc(sizeof(pair),p);
+	sched_list = malloc(sizeof(pair)*p);
+	running = true;
 }
 
 bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) {
 	bool result = false;
 	#pragma omp critical
-	{
-		for(int i = 1; i < p; i++) {
-			if(sched_list[i].alloc == 0) {
-				sched_list[i].alloc = 1;
+	if(running) {
+		for(unsigned int i = 1; i < p; i++) {
+			if(sched_list[i].free) {
+				sched_list[i].free = false;
 				*start_iteration = sched_list[i].start;
 				*end_iteration = sched_list[i].end;
 				result = true;
 				break;
 			}
 		}
-		if(!result && remaining_iterations > 0) {
-			int tmp_position = n - remaining_iterations;
-			int c = upper_gauss(remaining_iterations, 2 * p);
+		if(!result) {
+			unsigned int tmp_position = n - remaining_iterations;
+			unsigned int c = upper_gauss(remaining_iterations, 2 * p);
 			remaining_iterations -= p * c;
-			for(int j = 0; j < p; j++) {
-				sched_list[j].alloc = 0;
-				sched_list[j].start = tmp_position;
-				tmp_position += c;
-				sched_list[j].end = tmp_position - 1;
+			if(remaining_iterations > 0) {
+				for(unsigned int j = 0; j < p; j++) {
+					sched_list[j].free = true;
+					sched_list[j].start = tmp_position;
+					tmp_position += c;
+					sched_list[j].end = tmp_position - 1;
+				}
+				sched_list[0].free = false;
+				*start_iteration = sched_list[0].start;
+				*end_iteration = sched_list[0].end;
+			} else {
+				*start_iteration = tmp_position;
+				*end_iteration = n - 1;
+				running = false;
 			}
-			sched_list[0].alloc = 1;
-			*start_iteration = sched_list[0].start;
-			*end_iteration = sched_list[0].end;
 			result = true;
 		}
 	}
