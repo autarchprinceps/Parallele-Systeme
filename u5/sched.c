@@ -212,7 +212,7 @@ void self_scheduling_setup(int n, int p, int iam) {
 bool self_scheduling(int *start_iteration, int *end_iteration, int n, int p, int iam) {
 	bool result = false;
 	int tmp;
-	#pragma omp atomic
+	#pragma omp atomic capture
 	tmp = current_iteration++;
 	if(tmp < n) {
 		*start_iteration = *end_iteration = tmp;
@@ -232,7 +232,7 @@ void gss_setup(int n, int p, int iam) {
 
 bool gss(int *start_iteration, int *end_iteration, int n, int p, int iam) {
 	bool result = false;
-	#pragma omp critical
+	#pragma omp critical gss
 	{
 		if(remaining_iterations > 0) {
 			int c = (remaining_iterations + p - 1) / p;
@@ -273,7 +273,7 @@ void factoring_setup(int n, int p, int iam) {
 
 bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) {
 	bool result = false;
-	#pragma omp critical
+	#pragma omp critical fac
 	if(running) {
 		if(current_iteration < p) {
 			*start_iteration = sched_list[current_iteration].start;
