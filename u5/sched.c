@@ -294,9 +294,7 @@ bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) 
 				*end_iteration = sched_list[0].end;
 				current_iteration = 1;
 			} else {
-				// TODO test newer version
 				general_case = false;
-
 				for(int j = 0; j < p; j++) {
 					if(tmp_position < n) {
 						sched_list[j].start = tmp_position;
