@@ -311,13 +311,13 @@ bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) 
 				current_iteration = 1;
 			}
 			result = true;
-		} else {
-			if(current_iteration < p) {
-				*start_iteration = sched_list[current_iteration].start;
-				*end_iteration = sched_list[current_iteration].end;
-				result = sched_list[current_iteration].end > -1;
-				current_iteration++;
-			}
+		}
+	} else {
+		if(current_iteration < p) {
+			*start_iteration = sched_list[current_iteration].start;
+			*end_iteration = sched_list[current_iteration].end;
+			result = sched_list[current_iteration].end > -1;
+			current_iteration++;
 		}
 	}
 	return result;
