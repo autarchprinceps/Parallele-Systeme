@@ -254,7 +254,7 @@ typedef struct {
 } pair;
 
 static volatile pair* sched_list;
-static volatile bool running;
+static volatile bool general_case;
 
 void factoring_setup(int n, int p, int iam) {
 	current_iteration = 0;
@@ -268,13 +268,13 @@ void factoring_setup(int n, int p, int iam) {
 		tmp_position += c;
 		sched_list[j].end = tmp_position - 1;
 	}
-	running = true;
+	general_case = true;
 }
 
 bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) {
 	bool result = false;
 	#pragma omp critical (fac)
-	if(running) {
+	if(general_case) {
 		if(current_iteration < p) {
 			*start_iteration = sched_list[current_iteration].start;
 			*end_iteration = sched_list[current_iteration].end;
@@ -294,11 +294,30 @@ bool factoring(int *start_iteration, int *end_iteration, int n, int p, int iam) 
 				*end_iteration = sched_list[0].end;
 				current_iteration = 1;
 			} else {
-				*start_iteration = tmp_position;
-				*end_iteration = n - 1;
-				running = false;
+				// TODO test newer version
+				general_case = false;
+
+				for(int j = 0; j < p; j++) {
+					if(tmp_position < n) {
+						sched_list[j].start = tmp_position;
+						tmp_position += c;
+						sched_list[j].end = min(tmp_position, n) - 1;
+					} else {
+						sched_list[j].end = -1;
+					}
+				}
+				*start_iteration = sched_list[0].start;
+				*end_iteration = sched_list[0].end;
+				current_iteration = 1;
 			}
 			result = true;
+		} else {
+			if(current_iteration < p) {
+				*start_iteration = sched_list[current_iteration].start;
+				*end_iteration = sched_list[current_iteration].end;
+				result = sched_list[current_iteration].end > -1;
+				current_iteration++;
+			}
 		}
 	}
 	return result;
