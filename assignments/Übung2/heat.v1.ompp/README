@@ -1,6 +1,0 @@
-do a "module load intel-icc" once a session to get the Intel compiler loaded
-
-make : compile the program
-make run : run the program with a test data set
-
-The checksum should always be the same.

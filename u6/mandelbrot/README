@@ -1,0 +1,2 @@
+Do once a session:
+    module load openmpi/gnu
