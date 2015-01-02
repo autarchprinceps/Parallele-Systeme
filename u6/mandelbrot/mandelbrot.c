@@ -142,75 +142,70 @@ block_distribution (int start,	       /* start iteration */
 //==============================================================================
 // mandelbrot computation (on clients)
 
-static void mandelbrot_client(int maxiter, double dx, double dy, double xmin, double ymin)
-{
-  int start_iter, end_iter;
+static void mandelbrot_client(int maxiter, double dx, double dy, double xmin, double ymin) {
+	int start_iter, end_iter;
 
-  /* all other processors compute rows.
-     Determine start and end iteration for this processor
-     by a simple block distribution in the reference implementation.
+	/* all other processors compute rows.
+	Determine start and end iteration for this processor
+	by a simple block distribution in the reference implementation.
 
-     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-     It makes sense to distribute the work to a process at this single
-     place. Therefore replace the call to block_distribution with:
-     1) get information which iterations this processors should work on
-     i.e. get schedule vector from graph partitioning
-     2) let this processor do all these assigned iteration of the outer
-     loop
-     i.e. make a new surrounding loop and check at the i-th place of the
-     schedule vector whether this processor should execute iteration i (in
-     this case: start_iter=end_iter=i)
-     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  */
-  block_distribution (0, X_RESOLUTION - 1, size - 1, rank - 1,
-		      &start_iter, &end_iter);
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	It makes sense to distribute the work to a process at this single
+	place. Therefore replace the call to block_distribution with:
+	1) get information which iterations this processors should work on
+	i.e. get schedule vector from graph partitioning
+	2) let this processor do all these assigned iteration of the outer
+	loop
+	i.e. make a new surrounding loop and check at the i-th place of the
+	schedule vector whether this processor should execute iteration i (in
+	this case: start_iter=end_iter=i)
+	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	*/
+	block_distribution (0, X_RESOLUTION - 1, size - 1, rank - 1, &start_iter, &end_iter);
   
-#if (DEBUG > 0)
-  printf("process %d works from %d to %d\n", rank, start_iter, end_iter);
-#endif
+	#if (DEBUG > 0)
+		printf("process %d works from %d to %d\n", rank, start_iter, end_iter);
+	#endif
   
 
-  // calculate values for every point in complex plane
-  for (int i = start_iter; i <= end_iter; i++)
-    {
-      // measure row computation time, i.e. execution time for one single task
-      double t_task = gettime();
+	// calculate values for every point in complex plane
+	for (int i = start_iter; i <= end_iter; i++) {
+		// measure row computation time, i.e. execution time for one single task
+		double t_task = gettime();
 
-#if (DEBUG > 1)
-      printf("process %d starts working on row %d\n", rank, i);
-#endif
+		#if (DEBUG > 1)
+			printf("process %d starts working on row %d\n", rank, i);
+		#endif
   
-      for (int j = 0; j < Y_RESOLUTION; j++)
-	{
-	  int k;
-	  double absvalue, temp;
-	  struct
-	  {
-	    double real, imag;
-	  } z, c;
+		for (int j = 0; j < Y_RESOLUTION; j++) {
+			int k;
+			double absvalue, temp;
+			struct {
+				double real, imag;
+			} z, c;
 
-	  // map point to window
-	  c.real = xmin + i * dx;
-	  c.imag = ymin + j * dy;
-	  z.real = z.imag = 0.0;
-	  k = 0;
+			// map point to window
+			c.real = xmin + i * dx;
+			c.imag = ymin + j * dy;
+			z.real = z.imag = 0.0;
+			k = 0;
 	  
-	  do
-	    {
-	      temp = z.real * z.real - z.imag * z.imag + c.real;
-	      z.imag = 2.0 * z.real * z.imag + c.imag;
-	      z.real = temp;
-	      absvalue = z.real * z.real + z.imag * z.imag;
-	      k++;
-	    } while (absvalue < 4.0 && k < maxiter);
+			do {
+				temp = z.real * z.real - z.imag * z.imag + c.real;
+				z.imag = 2.0 * z.real * z.imag + c.imag;
+				z.real = temp;
+				absvalue = z.real * z.real + z.imag * z.imag;
+				k++;
+			} while (absvalue < 4.0 && k < maxiter);
 	  
-	  // display result (in our case just add to checksum)
-	  drawPoint (i, j, k);
+			// display result (in our case just add to checksum)
+			drawPoint (i, j, k);
+		}
+
+		// task time
+		t_task = gettime() - t_task;
+		fprintf(stderr, "row: %i time: %i\n", i, t_task);
 	}
-
-      // task time
-      t_task = gettime() - t_task;
-    }
 }
 
 
