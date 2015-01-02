@@ -204,7 +204,7 @@ static void mandelbrot_client(int maxiter, double dx, double dy, double xmin, do
 
 		// task time
 		t_task = gettime() - t_task;
-		fprintf(stderr, "row: %i time: %i\n", i, t_task);
+		fprintf(stderr, "row: %i time: %d\n", i, t_task);
 	}
 }
 
