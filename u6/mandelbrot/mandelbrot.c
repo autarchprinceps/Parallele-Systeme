@@ -139,45 +139,13 @@ block_distribution (int start,	       /* start iteration */
 #endif
 }
 
-//==============================================================================
-// mandelbrot computation (on clients)
-
-static void mandelbrot_client(int maxiter, double dx, double dy, double xmin, double ymin) {
-	int start_iter, end_iter;
-
-	/* all other processors compute rows.
-	Determine start and end iteration for this processor
-	by a simple block distribution in the reference implementation.
-
-	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	It makes sense to distribute the work to a process at this single
-	place. Therefore replace the call to block_distribution with:
-	1) get information which iterations this processors should work on
-	i.e. get schedule vector from graph partitioning
-	2) let this processor do all these assigned iteration of the outer
-	loop
-	i.e. make a new surrounding loop and check at the i-th place of the
-	schedule vector whether this processor should execute iteration i (in
-	this case: start_iter=end_iter=i)
-	!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	*/
-	block_distribution (0, X_RESOLUTION - 1, size - 1, rank - 1, &start_iter, &end_iter);
-  
-	#if (DEBUG > 0)
-		printf("process %d works from %d to %d\n", rank, start_iter, end_iter);
-	#endif
-  
-
+static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, double ymin, double task_times[X_RESOLUTION]) {  
 	// calculate values for every point in complex plane
-	for (int i = start_iter; i <= end_iter; i++) {
+	for(int i = 0; i < X_RESOLUTION; i++) {
 		// measure row computation time, i.e. execution time for one single task
 		double t_task = gettime();
-
-		#if (DEBUG > 1)
-			printf("process %d starts working on row %d\n", rank, i);
-		#endif
-  
-		for (int j = 0; j < Y_RESOLUTION; j++) {
+		
+		for(int j = 0; j < Y_RESOLUTION; j++) {
 			int k;
 			double absvalue, temp;
 			struct {
@@ -196,15 +164,137 @@ static void mandelbrot_client(int maxiter, double dx, double dy, double xmin, do
 				z.real = temp;
 				absvalue = z.real * z.real + z.imag * z.imag;
 				k++;
-			} while (absvalue < 4.0 && k < maxiter);
-	  
-			// display result (in our case just add to checksum)
-			drawPoint (i, j, k);
+			} while(absvalue < 4.0 && k < maxiter);
 		}
 
 		// task time
 		t_task = gettime() - t_task;
-		fprintf(stderr, "row: %i time: %f\n", i, t_task);
+
+		task_times[i] = t_task;
+	}
+}
+
+static void graph_distribution(int numprocs, int maxiter, double dx, double dy, double xmin, double ymin, idx_t part[X_RESOLUTION]) {
+	idx_t num_vertex = X_RESOLUTION;
+	idx_t num_edge = X_RESOLUTION - 1;
+	double task_times[X_RESOLUTION];
+	mandelbrot_simulate(maxiter, dx, dy, xmin, ymin, task_times);
+	idx_t vwgt[num_vertex];
+	for(int i = 0; i < num_vertex; i++) {
+		// TODO vwgt[i] = Math.round(task_times[i] * 100)
+	}
+	idx_t adjwgt[n_edge*2];
+	for(int i = 0; i < n_edge*2; i++) {
+		adjwgt[i] = 1;
+	}
+
+	idx_t xadj[n_vertex+1];
+	xadj[0] = 0;
+	xadj[1] = 1;
+	for(int i = 2; i < n_vertex - 1; i++) {
+		xadj[i] = xadj[i-1] + 2; // TODO remove arr depend?
+	}
+	xadj[n_vertex - 1] = 2*n_edge - 1;
+	xadj[n_vertex] = 2*n_edge;
+	
+	idx_t adjncy[2*n_edge]; // = { 1,   0,2,  1,3,  2,4, ...,   n_vertex-3,n_vertex-1,    n_vertex-2}
+	adjncy[0] = 1;
+	for(int i = 1; i < n_vertex - 1; i++) {
+		int idx = 1 + 2 * (i - 1); // TODO check
+		adjncy[idx] = i - 1;
+		adjncy[idx+1] = i + 1;
+	}
+	adjncy[2*n_edge - 1] = n_vertex - 2;
+
+	// Metis options (initialized to default values)
+	idx_t options[METIS_NOPTIONS];
+	METIS_SetDefaultOptions(options);
+	// partitioning method: k-way partitioning
+	options[METIS_OPTION_PTYPE] = METIS_PTYPE_KWAY;
+	// edge cut minimization
+	options[METIS_OPTION_OBJTYPE] = METIS_OBJTYPE_CUT;
+	// C-style numbering
+	options[METIS_OPTION_NUMBERING] = 0;
+
+	// number of balancing constraints
+	idx_t ncon = 1;
+
+	// edge cut after partitioning
+	idx_t edgecut;
+
+	idx_t nparts = numprocs - 1;
+	
+	int rc = METIS_PartGraphKway(
+	    &n_vertex,		// number of vertices
+		&ncon,          // number of balancing constraints
+		xadj,           // adjacency structure of graph
+		adjncy,	        // adjacency structure of graph
+		vwgt,           // vertex weights
+		NULL,           // only for total communication volume
+		adjwgt,	        // edge weights
+		&nparts,		// number of partitions wanted
+		NULL,           // tpwgts: no desired partition weights
+		NULL,           // ubvec: allowed load imbalance
+		options,		// special options
+		&edgecut,		// objective value (edge cut)
+		part 			// vector with partition information for each vertex
+	);
+
+	// check Metis return value
+	switch (rc) {
+		case METIS_OK:
+			break;
+		case METIS_ERROR_INPUT:
+			printf("error in Metis input\n");
+			exit(1);
+		case METIS_ERROR_MEMORY:
+			printf("no more memory in Metis\n");
+			exit(1);
+		case METIS_ERROR:
+			printf("some error in Metis\n");
+			exit(1);
+		default:
+			printf("unknown return code ffrom Metis\n");
+			exit(1);
+	}
+}
+
+//==============================================================================
+// mandelbrot computation (on clients)
+
+static void mandelbrot_client(int maxiter, double dx, double dy, double xmin, double ymin, idx_t part[X_RESOLUTION]) {
+	// calculate values for every point in complex plane
+	for (int i = 0; i < X_RESOLUTION; i++) {
+		if(part[i] == rank - 1) { // rank starts with 1 due to 0 being master, but metis starts with 0, since it doesn't schedule master
+			#if (DEBUG > 1)
+				printf("process %d starts working on row %d\n", rank, i);
+			#endif
+	  
+			for(int j = 0; j < Y_RESOLUTION; j++) {
+				int k;
+				double absvalue, temp;
+				struct {
+					double real, imag;
+				} z, c;
+
+				// map point to window
+				c.real = xmin + i * dx;
+				c.imag = ymin + j * dy;
+				z.real = z.imag = 0.0;
+				k = 0;
+		  
+				do {
+					temp = z.real * z.real - z.imag * z.imag + c.real;
+					z.imag = 2.0 * z.real * z.imag + c.imag;
+					z.real = temp;
+					absvalue = z.real * z.real + z.imag * z.imag;
+					k++;
+				} while(absvalue < 4.0 && k < maxiter);
+		  
+				// display result (in our case just add to checksum)
+				drawPoint (i, j, k);
+			}
+		}
 	}
 }
 
@@ -213,7 +303,7 @@ static void mandelbrot_client(int maxiter, double dx, double dy, double xmin, do
 /* mandelbrot computation */
 
 static void
-mandelbrot(int maxiter, double dx, double dy, double xmin, double ymin)
+mandelbrot(int maxiter, double dx, double dy, double xmin, double ymin, idx_t part[X_RESOLUTION])
 {
   if (rank == 0)
     {
@@ -224,7 +314,7 @@ mandelbrot(int maxiter, double dx, double dy, double xmin, double ymin)
   else
     {
       // all clients work on mandelbrot computations and send results to master
-      mandelbrot_client(maxiter, dx, dy, xmin, ymin);
+      mandelbrot_client(maxiter, dx, dy, xmin, ymin, part);
     }
 }
 
@@ -232,14 +322,13 @@ mandelbrot(int maxiter, double dx, double dy, double xmin, double ymin)
 //==============================================================================
 // main program
 
-int
-main (int argc, char **argv)
-{
+int main (int argc, char **argv) {
   int maxiter, err;
   double xmin, ymin, xmax, ymax;
   double dx, dy;
   double t_start, t_end;
 
+	idx_t part[X_RESOLUTION];
 
   // initialize MPI
   err = MPI_Init (&argc, &argv);
@@ -260,13 +349,24 @@ main (int argc, char **argv)
   dx = (xmax - xmin) / X_RESOLUTION;
   dy = (ymax - ymin) / Y_RESOLUTION;
 
+	// Scheduling
+	if(rank == 0) {
+		graph_distribution(size, maxiter, dx, dy, xmin, ymin, part);
+		// TODO send part
+	} else {
+		// TODO recv part
+		err = MPI_Recv(anziter, X_RESOLUTION, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+		assert(err == MPI_SUCCESS);
+	}
+	// END
+	
   //--------------------------------------------------------------------------
   // mandelbrot computation
 
   // get start time
   t_start = gettime ();
 
-  mandelbrot(maxiter, dx, dy, xmin, ymin);
+  mandelbrot(maxiter, dx, dy, xmin, ymin, part);
 
   // get end time
   t_end = gettime ();
