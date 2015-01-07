@@ -8,6 +8,7 @@
 cd $PBS_O_WORKDIR
 
 module load openmpi/gnu
+module load metis/5.1.0-gcc-32
 
 
 # determine number of MPI processes we have from the machinefile

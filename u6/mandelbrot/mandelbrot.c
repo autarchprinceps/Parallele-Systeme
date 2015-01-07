@@ -17,6 +17,7 @@
 #include <assert.h>
 
 #include <mpi.h>
+#include <metis.h>
 
 #include <libFHBRS.h>
 
@@ -181,7 +182,7 @@ static void graph_distribution(int numprocs, int maxiter, double dx, double dy, 
 	mandelbrot_simulate(maxiter, dx, dy, xmin, ymin, task_times);
 	idx_t vwgt[num_vertex];
 	for(int i = 0; i < num_vertex; i++) {
-		// TODO vwgt[i] = Math.round(task_times[i] * 100)
+		vwgt[i] = (int)lround(task_times[i] * 100)
 	}
 	idx_t adjwgt[n_edge*2];
 	for(int i = 0; i < n_edge*2; i++) {
@@ -302,20 +303,15 @@ static void mandelbrot_client(int maxiter, double dx, double dy, double xmin, do
 //==============================================================================
 /* mandelbrot computation */
 
-static void
-mandelbrot(int maxiter, double dx, double dy, double xmin, double ymin, idx_t part[X_RESOLUTION])
-{
-  if (rank == 0)
-    {
-      // master processor waits for data from slave processors
-      for (int i = 0; i < X_RESOLUTION; i++)
-	receive_data ();
-    }
-  else
-    {
-      // all clients work on mandelbrot computations and send results to master
-      mandelbrot_client(maxiter, dx, dy, xmin, ymin, part);
-    }
+static void mandelbrot(int maxiter, double dx, double dy, double xmin, double ymin, idx_t part[X_RESOLUTION]) {
+	if (rank == 0) {
+	// master processor waits for data from slave processors
+	for (int i = 0; i < X_RESOLUTION; i++)
+		receive_data ();
+	} else {
+		// all clients work on mandelbrot computations and send results to master
+		mandelbrot_client(maxiter, dx, dy, xmin, ymin, part);
+	}
 }
 
 
@@ -323,67 +319,73 @@ mandelbrot(int maxiter, double dx, double dy, double xmin, double ymin, idx_t pa
 // main program
 
 int main (int argc, char **argv) {
-  int maxiter, err;
-  double xmin, ymin, xmax, ymax;
-  double dx, dy;
-  double t_start, t_end;
+	int maxiter, err;
+	double xmin, ymin, xmax, ymax;
+	double dx, dy;
+	double t_start, t_end;
 
 	idx_t part[X_RESOLUTION];
 
-  // initialize MPI
-  err = MPI_Init (&argc, &argv);
-  assert(err == MPI_SUCCESS);
-  err = MPI_Comm_size (MPI_COMM_WORLD, &size);
-  assert(err == MPI_SUCCESS);
-  err = MPI_Comm_rank (MPI_COMM_WORLD, &rank);
-  assert(err == MPI_SUCCESS);
+	// initialize MPI
+	err = MPI_Init (&argc, &argv);
+	assert(err == MPI_SUCCESS);
+	err = MPI_Comm_size (MPI_COMM_WORLD, &size);
+	assert(err == MPI_SUCCESS);
+	err = MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+	assert(err == MPI_SUCCESS);
 
-  // initialization of mandelbrot variables
-  xmin = -1.5;
-  ymin = -1.5;
-  xmax = 1.5;
-  ymax = 1.5;
-  maxiter = 100000;
+	// initialization of mandelbrot variables
+	xmin = -1.5;
+	ymin = -1.5;
+	xmax = 1.5;
+	ymax = 1.5;
+	maxiter = 100000;
 
-  // init display variables
-  dx = (xmax - xmin) / X_RESOLUTION;
-  dy = (ymax - ymin) / Y_RESOLUTION;
+	// init display variables
+	dx = (xmax - xmin) / X_RESOLUTION;
+	dy = (ymax - ymin) / Y_RESOLUTION;
 
 	// Scheduling
+	MPI_Status status;
 	if(rank == 0) {
 		graph_distribution(size, maxiter, dx, dy, xmin, ymin, part);
-		// TODO send part
+		MPI_Request async[size - 1];
+		for(int i = 1; i < size; i++) {
+			MPI_Isend(part, X_RESOLUTION, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &async[i-1]);
+		}
+		for(int i = 0; i < size - 1; i++) {
+			err = MPI_Wait(&async[i], &status);
+			assert(err == MPI_SUCCESS);
+		}
 	} else {
-		// TODO recv part
-		err = MPI_Recv(anziter, X_RESOLUTION, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+		err = MPI_Recv(part, X_RESOLUTION, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
 		assert(err == MPI_SUCCESS);
 	}
 	// END
 	
-  //--------------------------------------------------------------------------
-  // mandelbrot computation
+	//--------------------------------------------------------------------------
+	// mandelbrot computation
 
-  // get start time
-  t_start = gettime ();
+	// get start time
+	t_start = gettime ();
 
-  mandelbrot(maxiter, dx, dy, xmin, ymin, part);
+	mandelbrot(maxiter, dx, dy, xmin, ymin, part);
 
-  // get end time
-  t_end = gettime ();
+	// get end time
+	t_end = gettime ();
 
-  //--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
 
-  if (rank == 0)
-    {
-      printf ("calculation took %.2f s on %d+1 processors\n", t_end - t_start, size-1);
-      printf("checksum = %lu\n", checksum);
-    }
+	if (rank == 0) {
+		printf ("calculation took %.2f s on %d+1 processors\n", t_end - t_start, size-1);
+		printf("checksum = %lu\n", checksum);
+	}
 
-  // exit MPI
-  err = MPI_Finalize ();
-  assert(err == MPI_SUCCESS);
+	// exit MPI
+	err = MPI_Finalize ();
+	assert(err == MPI_SUCCESS);
 
-  return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
 
 /*============================================================================*
