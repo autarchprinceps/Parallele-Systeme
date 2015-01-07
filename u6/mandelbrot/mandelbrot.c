@@ -196,7 +196,7 @@ static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, 
 			err = MPI_Wait(&requests[i], &status);
 			assert(err == MPI_SUCCESS);
 		}*/
-	}
+	//}
 }
 
 static void graph_distribution(int numprocs, idx_t vwgt[X_RESOLUTION], idx_t part[X_RESOLUTION]) {
