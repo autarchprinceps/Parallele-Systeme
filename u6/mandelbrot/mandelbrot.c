@@ -141,6 +141,7 @@ block_distribution (int start,	       /* start iteration */
 }
 
 static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, double ymin, int task_times[X_RESOLUTION]) {
+	int err;
 	if(rank == 0) {
 		MPI_Request requests[X_RESOLUTION];
 		for(int i = 0; i < X_RESOLUTION; i++) {
@@ -188,7 +189,7 @@ static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, 
 
 			task_times[i] = (int)lround(task_times[i] * 100);
 
-			MPI_Isend(&task_times[i], 1, MPI_Int, 0, i, MPI_COMM_WORLD, &requests[i - start_iter]);
+			MPI_Isend(&task_times[i], 1, MPI_INT, 0, i, MPI_COMM_WORLD, &requests[i - start_iter]);
 		}
 		MPI_Status status;
 		for(int i = 0; i <= end_iter - start_iter; i++) {
