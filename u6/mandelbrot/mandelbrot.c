@@ -348,18 +348,29 @@ int main (int argc, char **argv) {
 	// Scheduling
 	MPI_Status status;
 	if(rank == 0) {
+		t_start = gettime();
+		fprintf(stderr, "Reached distrtibute mpi_size: %i \n", size);
 		graph_distribution(size, maxiter, dx, dy, xmin, ymin, part);
+		t_end = gettime();
+		fprintf(stderr, "Finished distribute in %.2f s, sending results \n", t_start - t_end);
+		t_start = gettime();
 		MPI_Request async[size - 1];
 		for(int i = 1; i < size; i++) {
 			MPI_Isend(part, X_RESOLUTION, MPI_INT, i, 42, MPI_COMM_WORLD, &async[i-1]);
 		}
+		fprintf(stderr, "Waiting for sending to be completed \n");
 		for(int i = 0; i < size - 1; i++) {
 			err = MPI_Wait(&async[i], &status);
 			assert(err == MPI_SUCCESS);
 		}
+		t_end = gettime();
+		fprintf(stderr, "Sending completed in %.2f s\n", t_start - t_end);
 	} else {
+		t_start = gettime();
 		err = MPI_Recv(part, X_RESOLUTION, MPI_INT, 0, 42, MPI_COMM_WORLD, &status);
 		assert(err == MPI_SUCCESS);
+		t_end = gettime();
+		fprintf(stderr, "%i received distribution after %.2f s waiting \n", rank, t_start - t_end);
 	}
 	// END
 	
@@ -367,16 +378,16 @@ int main (int argc, char **argv) {
 	// mandelbrot computation
 
 	// get start time
-	t_start = gettime ();
+	t_start = gettime();
 
 	mandelbrot(maxiter, dx, dy, xmin, ymin, part);
 
 	// get end time
-	t_end = gettime ();
+	t_end = gettime();
 
 	//--------------------------------------------------------------------------
 
-	if (rank == 0) {
+	if(rank == 0) {
 		printf ("calculation took %.2f s on %d+1 processors\n", t_end - t_start, size-1);
 		printf("checksum = %lu\n", checksum);
 	}
