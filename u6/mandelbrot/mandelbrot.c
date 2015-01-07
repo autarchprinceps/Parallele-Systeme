@@ -141,7 +141,7 @@ block_distribution (int start,	       /* start iteration */
 }
 
 static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, double ymin, idx_t task_times[X_RESOLUTION]) {
-	int err;
+	/*int err;
 	if(rank == 0) {
 		MPI_Request requests[X_RESOLUTION];
 		for(int i = 0; i < X_RESOLUTION; i++) {
@@ -156,9 +156,9 @@ static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, 
 		int start_iter, end_iter;
 		block_distribution(0, X_RESOLUTION - 1, size - 1, rank - 1, &start_iter, &end_iter);
 		MPI_Request requests[end_iter - start_iter + 1];
-
+		*/
 		// calculate values for every point in complex plane
-		for(int i = start_iter; i <= end_iter; i++) {
+		for(int i = 0; i < X_RESOLUTION; i++) {
 			// measure row computation time, i.e. execution time for one single task
 			double t_task = gettime();
 
@@ -189,13 +189,13 @@ static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, 
 
 			task_times[i] = (int)lround(task_times[i] * 100);
 
-			MPI_Isend(&task_times[i], 1, MPI_INT, 0, i, MPI_COMM_WORLD, &requests[i - start_iter]);
+			//MPI_Isend(&task_times[i], 1, MPI_INT, 0, i, MPI_COMM_WORLD, &requests[i - start_iter]);
 		}
-		MPI_Status status;
+		/*MPI_Status status;
 		for(int i = 0; i <= end_iter - start_iter; i++) {
 			err = MPI_Wait(&requests[i], &status);
 			assert(err == MPI_SUCCESS);
-		}
+		}*/
 	}
 }
 
@@ -363,20 +363,22 @@ int main (int argc, char **argv) {
 	dx = (xmax - xmin) / X_RESOLUTION;
 	dy = (ymax - ymin) / Y_RESOLUTION;
 
-	idx_t task_times[X_RESOLUTION];
-	if(rank == 0) {
-		t_start = gettime();
-		fprintf(stderr, "Starting simulation\n");
-	}
-	mandelbrot_simulate(maxiter, dx, dy, xmin, ymin, task_times);
-	if(rank == 0) {
-		t_end = gettime();
-		fprintf(stderr, "Simulation finished in %.2f s\n", t_end - t_start);
-	}
-
-	// Scheduling
 	MPI_Status status;
 	if(rank == 0) {
+	idx_t task_times[X_RESOLUTION];
+	//if(rank == 0) {
+		t_start = gettime();
+		fprintf(stderr, "Starting simulation\n");
+	//}
+		mandelbrot_simulate(maxiter, dx, dy, xmin, ymin, task_times);
+	//if(rank == 0) {
+		t_end = gettime();
+		fprintf(stderr, "Simulation finished in %.2f s\n", t_end - t_start);
+	//}
+
+	// Scheduling
+	
+	//if(rank == 0) {
 		t_start = gettime();
 		fprintf(stderr, "Reached distrtibute mpi_size: %i \n", size);
 		graph_distribution(size, task_times, part);
