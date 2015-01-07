@@ -140,7 +140,7 @@ block_distribution (int start,	       /* start iteration */
 #endif
 }
 
-static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, double ymin, int task_times[X_RESOLUTION]) {
+static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, double ymin, idx_t task_times[X_RESOLUTION]) {
 	int err;
 	if(rank == 0) {
 		MPI_Request requests[X_RESOLUTION];
@@ -366,12 +366,12 @@ int main (int argc, char **argv) {
 	idx_t task_times[X_RESOLUTION];
 	if(rank == 0) {
 		t_start = gettime();
-		fprintf("Starting simulation\n");
+		fprintf(stderr, "Starting simulation\n");
 	}
 	mandelbrot_simulate(maxiter, dx, dy, xmin, ymin, task_times);
 	if(rank == 0) {
 		t_end = gettime();
-		fprintf("Simulation finished in %.2f s\n", t_end - t_start)
+		fprintf(stderr, "Simulation finished in %.2f s\n", t_end - t_start);
 	}
 
 	// Scheduling
