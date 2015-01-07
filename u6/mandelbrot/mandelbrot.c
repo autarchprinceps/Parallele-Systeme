@@ -351,14 +351,14 @@ int main (int argc, char **argv) {
 		graph_distribution(size, maxiter, dx, dy, xmin, ymin, part);
 		MPI_Request async[size - 1];
 		for(int i = 1; i < size; i++) {
-			MPI_Isend(part, X_RESOLUTION, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &async[i-1]);
+			MPI_Isend(part, X_RESOLUTION, MPI_INT, i, 42, MPI_COMM_WORLD, &async[i-1]);
 		}
 		for(int i = 0; i < size - 1; i++) {
 			err = MPI_Wait(&async[i], &status);
 			assert(err == MPI_SUCCESS);
 		}
 	} else {
-		err = MPI_Recv(part, X_RESOLUTION, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+		err = MPI_Recv(part, X_RESOLUTION, MPI_INT, 0, 42, MPI_COMM_WORLD, &status);
 		assert(err == MPI_SUCCESS);
 	}
 	// END
