@@ -176,13 +176,13 @@ static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, 
 }
 
 static void graph_distribution(int numprocs, int maxiter, double dx, double dy, double xmin, double ymin, idx_t part[X_RESOLUTION]) {
-	idx_t num_vertex = X_RESOLUTION;
-	idx_t num_edge = X_RESOLUTION - 1;
+	idx_t n_vertex = X_RESOLUTION;
+	idx_t n_edge = X_RESOLUTION - 1;
 	double task_times[X_RESOLUTION];
 	mandelbrot_simulate(maxiter, dx, dy, xmin, ymin, task_times);
-	idx_t vwgt[num_vertex];
-	for(int i = 0; i < num_vertex; i++) {
-		vwgt[i] = (int)lround(task_times[i] * 100)
+	idx_t vwgt[n_vertex];
+	for(int i = 0; i < n_vertex; i++) {
+		vwgt[i] = (int)lround(task_times[i] * 100);
 	}
 	idx_t adjwgt[n_edge*2];
 	for(int i = 0; i < n_edge*2; i++) {
