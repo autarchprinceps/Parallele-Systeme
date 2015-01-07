@@ -242,6 +242,23 @@ static void graph_distribution(int numprocs, idx_t vwgt[X_RESOLUTION], idx_t par
 	idx_t edgecut;
 
 	idx_t nparts = numprocs - 1;
+
+	//print graph
+	printf("graph (%ld vertices, %ld edges):\n", (long)n_vertex, (long)xadj[n_vertex] / 2);
+
+	// print vertices with adjacency list
+	printf("%6s (%10s) : %s\n", "vertex", "weight", "neighbors(edge weight)");
+	for(idx_t vertex = 0; vertex < n_vertex; vertex++) {
+		// print vertex number and vertex weight
+		printf("%6ld (%10ld) : ", (long)vertex, (long)vwgt[vertex]);
+
+		// adjacent vertices. print vertex number and edge weight
+		idx_t start_edge = xadj[vertex];
+		idx_t end_edge = xadj[vertex + 1] - 1;
+		for(idx_t neighbor = start_edge; neighbor <= end_edge; neighbor++)
+			printf("%4ld(%ld) ", (long)adjncy[neighbor], (long)adjwgt[neighbor]);
+		printf("\n");
+	}
 	
 	int rc = METIS_PartGraphKway(
 	    &n_vertex,		// number of vertices
@@ -262,18 +279,19 @@ static void graph_distribution(int numprocs, idx_t vwgt[X_RESOLUTION], idx_t par
 	// check Metis return value
 	switch (rc) {
 		case METIS_OK:
+			fprintf(stderr, "DEBUG: METIS_OK\n");
 			break;
 		case METIS_ERROR_INPUT:
-			printf("error in Metis input\n");
+			fprintf(stderr, "error in Metis input\n");
 			exit(1);
 		case METIS_ERROR_MEMORY:
-			printf("no more memory in Metis\n");
+			fprintf(stderr, "no more memory in Metis\n");
 			exit(1);
 		case METIS_ERROR:
-			printf("some error in Metis\n");
+			fprintf(stderr, "some error in Metis\n");
 			exit(1);
 		default:
-			printf("unknown return code ffrom Metis\n");
+			fprintf(stderr, "unknown return code ffrom Metis\n");
 			exit(1);
 	}
 }
@@ -364,8 +382,9 @@ int main (int argc, char **argv) {
 	dy = (ymax - ymin) / Y_RESOLUTION;
 
 	MPI_Status status;
+
 	if(rank == 0) {
-	idx_t task_times[X_RESOLUTION];
+		idx_t task_times[X_RESOLUTION];
 	//if(rank == 0) {
 		t_start = gettime();
 		fprintf(stderr, "Starting simulation\n");
@@ -383,11 +402,11 @@ int main (int argc, char **argv) {
 		fprintf(stderr, "Reached distrtibute mpi_size: %i \n", size);
 		graph_distribution(size, task_times, part);
 		t_end = gettime();
-		fprintf(stderr, "Finished distribute in %.2f s, sending results \n", t_start - t_end);
+		fprintf(stderr, "Finished distribute in %.2f s, sending results \n", t_end - t_start);
 		t_start = gettime();
 		MPI_Request async[size - 1];
 		for(int i = 1; i < size; i++) {
-			MPI_Isend(part, X_RESOLUTION, MPI_INT, i, -42, MPI_COMM_WORLD, &async[i-1]);
+			MPI_Isend(part, X_RESOLUTION, MPI_INT, i, 42, MPI_COMM_WORLD, &async[i-1]);
 		}
 		fprintf(stderr, "Waiting for sending to be completed \n");
 		for(int i = 0; i < size - 1; i++) {
@@ -398,7 +417,7 @@ int main (int argc, char **argv) {
 		fprintf(stderr, "Sending completed in %.2f s\n", t_end - t_start);
 	} else {
 		t_start = gettime();
-		err = MPI_Recv(part, X_RESOLUTION, MPI_INT, 0, -42, MPI_COMM_WORLD, &status);
+		err = MPI_Recv(part, X_RESOLUTION, MPI_INT, 0, 42, MPI_COMM_WORLD, &status);
 		assert(err == MPI_SUCCESS);
 		t_end = gettime();
 		fprintf(stderr, "%i received distribution after %.2f s waiting \n", rank, t_end - t_start);
