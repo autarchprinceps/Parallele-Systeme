@@ -1,6 +1,6 @@
 MPICC	= mpicc
 CFLAGS	= -O2 -std=c99 -Wall -I/usr/local/include
-LDFLAGS	= -L/usr/local/lib -lFHBRS -L/usr/X11R6/lib -lX11
+LDFLAGS	= -L/usr/local/lib -lmetis -lFHBRS -L/usr/X11R6/lib -lX11
 
 default:: mandelbrot.exe
 
