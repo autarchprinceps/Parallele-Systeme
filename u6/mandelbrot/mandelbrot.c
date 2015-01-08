@@ -187,7 +187,9 @@ static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, 
 			// task time
 			t_task = gettime() - t_task;
 
-			task_times[i] = (int)lround(task_times[i] * 100);
+			fprintf(stderr, "%f ", t_task);
+
+			task_times[i] = (int)lround(task_times[i] * 10000);
 
 			//MPI_Isend(&task_times[i], 1, MPI_INT, 0, i, MPI_COMM_WORLD, &requests[i - start_iter]);
 		}
