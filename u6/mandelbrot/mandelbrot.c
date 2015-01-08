@@ -189,11 +189,11 @@ static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, 
 
 			fprintf(stderr, "%f ", t_task);
 
-			task_times[i] = lround(t_task * 10000);
+			task_times[i] = lround(t_task * 10000) + 1;
 
 			fprintf(stderr, "%i ", task_times[i]);
 
-			//MPI_Isend(&task_times[i], 1, MPI_INT, 0, i, MPI_COMM_WORLD, &requests[i - start_iter]);
+			//MPI_Isend(&task_times[i], 1, MPI_LONG, 0, i, MPI_COMM_WORLD, &requests[i - start_iter]);
 		}
 		/*MPI_Status status;
 		for(int i = 0; i <= end_iter - start_iter; i++) {
