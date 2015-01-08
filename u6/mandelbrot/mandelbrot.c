@@ -189,7 +189,7 @@ static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, 
 
 			fprintf(stderr, "%f ", t_task);
 
-			task_times[i] = (int)ceil(task_times[i] * 100000);
+			task_times[i] = (int)lround(t_task * 10000);
 
 			fprintf(stderr, "%i ", task_times[i]);
 
