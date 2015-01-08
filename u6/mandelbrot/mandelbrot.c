@@ -396,6 +396,10 @@ int main (int argc, char **argv) {
 	//}
 
 	// Scheduling
+		for(int i = 0; i < X_RESOLUTION; i++) {
+			fprintf(stderr, "%i ", task_times[i]);
+		}
+		fprintf(stderr, "\n");
 	
 	//if(rank == 0) {
 		t_start = gettime();
