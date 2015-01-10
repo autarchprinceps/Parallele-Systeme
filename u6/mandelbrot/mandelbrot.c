@@ -62,7 +62,7 @@ static void receive_data () {
 	for (int j = 1; j <= Y_RESOLUTION; j++)
 		checksum += anziter[j];
 }
-*/
+
 //==============================================================================
 /* Only executed on processors other than 0.
    Get gather data on a point (and in a non-batch environment we would display this pixel).
@@ -86,7 +86,7 @@ static void drawPoint (int i, int j, int anziter) {
       assert(err == MPI_SUCCESS);
     }
 }
-*/
+
 //==============================================================================
 /* does a block distribution from start-end to p processors returning in
    local_start / local_end block boundaries for processor iam
