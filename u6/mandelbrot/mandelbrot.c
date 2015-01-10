@@ -128,62 +128,38 @@ static void block_distribution (int start,	    // start iteration
 }
 
 static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, double ymin, idx_t task_times[X_RESOLUTION]) {
-	/*int err;
-	if(rank == 0) {
-		MPI_Request requests[X_RESOLUTION];
-		for(int i = 0; i < X_RESOLUTION; i++) {
-			MPI_Irecv(&task_times[i], 1, MPI_INT, MPI_ANY_SOURCE, i, MPI_COMM_WORLD, &requests[i]);
+	// calculate values for every point in complex plane
+	for(int i = 0; i < X_RESOLUTION; i++) {
+		// measure row computation time, i.e. execution time for one single task
+		double t_task = gettime();
+
+		for(int j = 0; j < Y_RESOLUTION; j++) {
+			int k;
+			double absvalue, temp;
+			struct {
+				double real, imag;
+			} z, c;
+
+			// map point to window
+			c.real = xmin + i * dx;
+			c.imag = ymin + j * dy;
+			z.real = z.imag = 0.0;
+			k = 0;
+
+			do {
+				temp = z.real * z.real - z.imag * z.imag + c.real;
+				z.imag = 2.0 * z.real * z.imag + c.imag;
+				z.real = temp;
+				absvalue = z.real * z.real + z.imag * z.imag;
+				k++;
+			} while(absvalue < 4.0 && k < maxiter);
 		}
-		MPI_Status status;
-		for(int i = 0; i < size - 1; i++) {
-			err = MPI_Wait(&requests[i], &status);
-			assert(err == MPI_SUCCESS);
-		}
-	} else {
-		int start_iter, end_iter;
-		block_distribution(0, X_RESOLUTION - 1, size - 1, rank - 1, &start_iter, &end_iter);
-		MPI_Request requests[end_iter - start_iter + 1];
-		*/
-		// calculate values for every point in complex plane
-		for(int i = 0; i < X_RESOLUTION; i++) {
-			// measure row computation time, i.e. execution time for one single task
-			double t_task = gettime();
 
-			for(int j = 0; j < Y_RESOLUTION; j++) {
-				int k;
-				double absvalue, temp;
-				struct {
-					double real, imag;
-				} z, c;
+		// task time
+		t_task = gettime() - t_task;
 
-				// map point to window
-				c.real = xmin + i * dx;
-				c.imag = ymin + j * dy;
-				z.real = z.imag = 0.0;
-				k = 0;
-
-				do {
-					temp = z.real * z.real - z.imag * z.imag + c.real;
-					z.imag = 2.0 * z.real * z.imag + c.imag;
-					z.real = temp;
-					absvalue = z.real * z.real + z.imag * z.imag;
-					k++;
-				} while(absvalue < 4.0 && k < maxiter);
-			}
-
-			// task time
-			t_task = gettime() - t_task;
-
-			task_times[i] = lround(t_task * 100000) + 1;
-
-			//MPI_Isend(&task_times[i], 1, MPI_LONG, 0, i, MPI_COMM_WORLD, &requests[i - start_iter]);
-		}
-		/*MPI_Status status;
-		for(int i = 0; i <= end_iter - start_iter; i++) {
-			err = MPI_Wait(&requests[i], &status);
-			assert(err == MPI_SUCCESS);
-		}*/
-	//}
+		task_times[i] = lround(t_task * 100000) + 1;
+	}
 }
 
 static void graph_distribution(int numprocs, idx_t vwgt[X_RESOLUTION], idx_t part[X_RESOLUTION]) {
@@ -198,7 +174,7 @@ static void graph_distribution(int numprocs, idx_t vwgt[X_RESOLUTION], idx_t par
 	xadj[0] = 0;
 	xadj[1] = 1;
 	for(int i = 2; i < n_vertex - 1; i++) {
-		xadj[i] = xadj[i-1] + 2; // TODO remove arr depend?
+		xadj[i] = xadj[i-1] + 2;
 	}
 	xadj[n_vertex - 1] = 2*n_edge - 1;
 	xadj[n_vertex] = 2*n_edge;
@@ -206,7 +182,7 @@ static void graph_distribution(int numprocs, idx_t vwgt[X_RESOLUTION], idx_t par
 	idx_t adjncy[2*n_edge]; // = { 1,   0,2,  1,3,  2,4, ...,   n_vertex-3,n_vertex-1,    n_vertex-2}
 	adjncy[0] = 1;
 	for(int i = 1; i < n_vertex - 1; i++) {
-		int idx = 1 + 2 * (i - 1); // TODO check
+		int idx = 1 + 2 * (i - 1);
 		adjncy[idx] = i - 1;
 		adjncy[idx+1] = i + 1;
 	}
@@ -229,23 +205,6 @@ static void graph_distribution(int numprocs, idx_t vwgt[X_RESOLUTION], idx_t par
 	idx_t edgecut;
 
 	idx_t nparts = numprocs - 1;
-
-	/*//print graph
-	printf("graph (%ld vertices, %ld edges):\n", (long)n_vertex, (long)xadj[n_vertex] / 2);
-
-	// print vertices with adjacency list
-	printf("%6s (%10s) : %s\n", "vertex", "weight", "neighbors(edge weight)");
-	for(idx_t vertex = 0; vertex < n_vertex; vertex++) {
-		// print vertex number and vertex weight
-		printf("%6ld (%10ld) : ", (long)vertex, (long)vwgt[vertex]);
-
-		// adjacent vertices. print vertex number and edge weight
-		idx_t start_edge = xadj[vertex];
-		idx_t end_edge = xadj[vertex + 1] - 1;
-		for(idx_t neighbor = start_edge; neighbor <= end_edge; neighbor++)
-			printf("%4ld(%ld) ", (long)adjncy[neighbor], (long)adjwgt[neighbor]);
-		printf("\n");
-	}*/
 	
 	int rc = METIS_PartGraphKway(
 	    &n_vertex,		// number of vertices
@@ -288,7 +247,7 @@ static void graph_distribution(int numprocs, idx_t vwgt[X_RESOLUTION], idx_t par
 static void mandelbrot_client(int maxiter, double dx, double dy, double xmin, double ymin, idx_t part[X_RESOLUTION]) {
 	// calculate values for every point in complex plane
 	for (int i = 0; i < X_RESOLUTION; i++) {
-		if(part[i] == rank - 1) { // rank starts with 1 due to 0 being master, but metis starts with 0, since it doesn't schedule master
+		if(size == 2 || part[i] == rank - 1) { // size == 2 means that there is only one worker that executes all, rank starts with 1 due to 0 being master, but metis starts with 0, since it doesn't schedule master
 			#if (DEBUG > 1)
 				printf("process %d starts working on row %d\n", rank, i);
 			#endif
@@ -368,45 +327,24 @@ int main (int argc, char **argv) {
 
 	MPI_Status status;
 
-	if(rank == 0) {
-		idx_t task_times[X_RESOLUTION];
-	//if(rank == 0) {
-		fprintf(stderr, "Starting simulation\n");
-		t_start = gettime();
-	//}
-		mandelbrot_simulate(maxiter, dx, dy, xmin, ymin, task_times);
-	//if(rank == 0) {
-		t_end = gettime();
-		fprintf(stderr, "Simulation finished in %.2f s\n", t_end - t_start);
-	//}
+	if(size > 2) {
+		if(rank == 0) {
+			idx_t task_times[X_RESOLUTION];
+			mandelbrot_simulate(maxiter, dx, dy, xmin, ymin, task_times);
+			graph_distribution(size, task_times, part);
 
-	// Scheduling
-	
-	//if(rank == 0) {
-		fprintf(stderr, "Reached distrtibute mpi_size: %i \n", size);
-		t_start = gettime();
-		graph_distribution(size, task_times, part);
-		t_end = gettime();
-		fprintf(stderr, "Finished distribute in %.2f s, sending results \n", t_end - t_start);
-
-		t_start = gettime();
-		MPI_Request async[size - 1];
-		for(int i = 1; i < size; i++) {
-			MPI_Isend(part, X_RESOLUTION, MPI_INT, i, 42, MPI_COMM_WORLD, &async[i-1]);
-		}
-		fprintf(stderr, "Waiting for sending to be completed \n");
-		for(int i = 0; i < size - 1; i++) {
-			err = MPI_Wait(&async[i], &status);
+			MPI_Request async[size - 1];
+			for(int i = 1; i < size; i++) {
+				MPI_Isend(part, X_RESOLUTION, MPI_INT, i, 42, MPI_COMM_WORLD, &async[i - 1]);
+			}
+			for(int i = 0; i < size - 1; i++) {
+				err = MPI_Wait(&async[i], &status);
+				assert(err == MPI_SUCCESS);
+			}
+		} else {
+			err = MPI_Recv(part, X_RESOLUTION, MPI_INT, 0, 42, MPI_COMM_WORLD, &status);
 			assert(err == MPI_SUCCESS);
 		}
-		t_end = gettime();
-		fprintf(stderr, "Sending completed in %.2f s\n", t_end - t_start);
-	} else {
-		t_start = gettime();
-		err = MPI_Recv(part, X_RESOLUTION, MPI_INT, 0, 42, MPI_COMM_WORLD, &status);
-		assert(err == MPI_SUCCESS);
-		t_end = gettime();
-		fprintf(stderr, "%i received distribution after %.2f s waiting \n", rank, t_end - t_start);
 	}
 	// END
 	
