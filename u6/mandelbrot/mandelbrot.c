@@ -414,7 +414,7 @@ int main (int argc, char **argv) {
 	// mandelbrot computation
 
 	// get start time
-	/* DBG t_start = gettime();
+	t_start = gettime();
 
 	mandelbrot(maxiter, dx, dy, xmin, ymin, part);
 
@@ -427,7 +427,7 @@ int main (int argc, char **argv) {
 		printf ("calculation took %.2f s on %d+1 processors\n", t_end - t_start, size-1);
 		printf("checksum = %lu\n", checksum);
 	}
-	*/
+	
 	// exit MPI
 	err = MPI_Finalize ();
 	assert(err == MPI_SUCCESS);
