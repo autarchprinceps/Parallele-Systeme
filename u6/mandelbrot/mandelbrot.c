@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include <mpi.h>
+// DBG #include <mpi.h>
 #include <metis.h>
 
 #include <libFHBRS.h>
@@ -41,14 +41,14 @@
 static int size, rank;
 
 // checksum if we don't display
-static unsigned long checksum;
+// DBG static unsigned long checksum;
 
 
 //==============================================================================
 /*  Only executed on master processor (üprocessor 0).
     Receive one row from a slave processor.
 */
-
+/* DBG
 static void
 receive_data ()
 {
@@ -65,21 +65,17 @@ receive_data ()
   for (int j = 1; j <= Y_RESOLUTION; j++)
     checksum += anziter[j];
 }
-
+*/
 //==============================================================================
 /* Only executed on processors other than 0.
    Get gather data on a point (and in a non-batch environment we would display this pixel).
 */
-
+/* DBG
 static void
 drawPoint (int i, int j, int anziter)
 {
   // static: lifetime over all calls to the function
   static int iter[Y_RESOLUTION+1];
-
-  /* processor 1..n gather information for a complete row
-     and send the complete row to processor 0
-  */
 
   // store row number
   iter[0] = i;
@@ -96,19 +92,19 @@ drawPoint (int i, int j, int anziter)
       assert(err == MPI_SUCCESS);
     }
 }
-
+*/
 //==============================================================================
 /* does a block distribution from start-end to p processors returning in
    local_start / local_end block boundaries for processor iam
  */
-
+/* DBG
 static void
-block_distribution (int start,	       /* start iteration */
-		    int end,	       /* end iteration (incl.) */
-		    int p,	       /* number of processors */
-		    int iam,	       /* my processor number */
-		    int *local_start,  /* local start iteration */
-		    int *local_end     /* local end iteration (incl.) */
+block_distribution (int start,	       // start iteration
+		    int end,	       // end iteration (incl.)
+		    int p,	       // number of processors
+		    int iam,	       // my processor number
+		    int *local_start,  // local start iteration
+		    int *local_end     // local end iteration (incl.)
 	)
 {
   int n = end - start + 1;
@@ -139,7 +135,7 @@ block_distribution (int start,	       /* start iteration */
 	  p, n, q, r, start, end, *local_start, *local_end);
 #endif
 }
-
+*/
 static void mandelbrot_simulate(int maxiter, double dx, double dy, double xmin, double ymin, idx_t task_times[X_RESOLUTION]) {
 	/*int err;
 	if(rank == 0) {
@@ -298,7 +294,7 @@ static void graph_distribution(int numprocs, idx_t vwgt[X_RESOLUTION], idx_t par
 
 //==============================================================================
 // mandelbrot computation (on clients)
-
+/* DBG
 static void mandelbrot_client(int maxiter, double dx, double dy, double xmin, double ymin, idx_t part[X_RESOLUTION]) {
 	// calculate values for every point in complex plane
 	for (int i = 0; i < X_RESOLUTION; i++) {
@@ -333,22 +329,22 @@ static void mandelbrot_client(int maxiter, double dx, double dy, double xmin, do
 			}
 		}
 	}
-}
+}*/
 
 
 //==============================================================================
 /* mandelbrot computation */
-
+/* DBG
 static void mandelbrot(int maxiter, double dx, double dy, double xmin, double ymin, idx_t part[X_RESOLUTION]) {
 	if (rank == 0) {
 	// master processor waits for data from slave processors
-	for (int i = 0; i < X_RESOLUTION; i++)
-		receive_data ();
+		for (int i = 0; i < X_RESOLUTION; i++)
+			receive_data ();
 	} else {
 		// all clients work on mandelbrot computations and send results to master
 		mandelbrot_client(maxiter, dx, dy, xmin, ymin, part);
 	}
-}
+}*/
 
 
 //==============================================================================
@@ -361,14 +357,17 @@ int main (int argc, char **argv) {
 	double t_start, t_end;
 
 	idx_t part[X_RESOLUTION];
+	// DBG
+	rank = 0;
+	size = 32;
 
 	// initialize MPI
-	err = MPI_Init (&argc, &argv);
+	/* DBG err = MPI_Init (&argc, &argv);
 	assert(err == MPI_SUCCESS);
 	err = MPI_Comm_size (MPI_COMM_WORLD, &size);
 	assert(err == MPI_SUCCESS);
 	err = MPI_Comm_rank (MPI_COMM_WORLD, &rank);
-	assert(err == MPI_SUCCESS);
+	assert(err == MPI_SUCCESS);*/
 
 	// initialization of mandelbrot variables
 	xmin = -1.5;
@@ -381,9 +380,9 @@ int main (int argc, char **argv) {
 	dx = (xmax - xmin) / X_RESOLUTION;
 	dy = (ymax - ymin) / Y_RESOLUTION;
 
-	MPI_Status status;
+	// DBG MPI_Status status;
 
-	if(rank == 0) {
+	// DBG if(rank == 0) {
 		idx_t task_times[X_RESOLUTION];
 	//if(rank == 0) {
 		fprintf(stderr, "Starting simulation\n");
@@ -403,7 +402,12 @@ int main (int argc, char **argv) {
 		graph_distribution(size, task_times, part);
 		t_end = gettime();
 		fprintf(stderr, "Finished distribute in %.2f s, sending results \n", t_end - t_start);
-		t_start = gettime();
+
+		// DBG
+		for(int i = 0; i < X_RESOLUTION; i++) {
+			printf("%i ", part[i]);
+		}
+		/* DBG t_start = gettime();
 		MPI_Request async[size - 1];
 		for(int i = 1; i < size; i++) {
 			MPI_Isend(part, X_RESOLUTION, MPI_INT, i, 42, MPI_COMM_WORLD, &async[i-1]);
@@ -414,21 +418,21 @@ int main (int argc, char **argv) {
 			assert(err == MPI_SUCCESS);
 		}
 		t_end = gettime();
-		fprintf(stderr, "Sending completed in %.2f s\n", t_end - t_start);
-	} else {
+		fprintf(stderr, "Sending completed in %.2f s\n", t_end - t_start);*/
+	/* DBG } else {
 		t_start = gettime();
 		err = MPI_Recv(part, X_RESOLUTION, MPI_INT, 0, 42, MPI_COMM_WORLD, &status);
 		assert(err == MPI_SUCCESS);
 		t_end = gettime();
 		// fprintf(stderr, "%i received distribution after %.2f s waiting \n", rank, t_end - t_start);
-	}
+	}*/
 	// END
 	
 	//--------------------------------------------------------------------------
 	// mandelbrot computation
 
 	// get start time
-	t_start = gettime();
+	/* DBG t_start = gettime();
 
 	mandelbrot(maxiter, dx, dy, xmin, ymin, part);
 
@@ -445,7 +449,7 @@ int main (int argc, char **argv) {
 	// exit MPI
 	err = MPI_Finalize ();
 	assert(err == MPI_SUCCESS);
-
+	*/
 	return EXIT_SUCCESS;
 }
 
