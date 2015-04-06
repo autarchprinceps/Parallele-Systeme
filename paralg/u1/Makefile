@@ -11,7 +11,7 @@ N	= 5000
 # default number of processors for test run (N%P == 0!)
 P	= 2
 
-default:: floyd_seq.exe floyd_mpi.exe least_square_fit.exe
+default:: floyd_seq.exe floyd_mpi.exe least_square_fit.exe pp.exe
 
 run:: floyd_seq.exe floyd_mpi.exe
 	./floyd_seq.exe $(N)
