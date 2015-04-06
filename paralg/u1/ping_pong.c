@@ -3,7 +3,6 @@
 #include <assert.h>
 #include <mpi.h>
 #include <libFHBRS.h>
-#include <math.h>
 
 void leastSquareFit
   (
@@ -55,7 +54,7 @@ void pp(unsigned int MSGLENSTART, unsigned int MSGLENMAX, unsigned int MSGLENINC
 	char* buf = malloc(sizeof(char) * MSGLENMAX);
 	for(unsigned int i = 0; i < log->n; i++) {
 		unsigned int msglen = MSGLENSTART + i * MSGLENINC;
-		double tmin = DBL_MAX;
+		double tmin = 999999999;
 		for(int iter = 0; iter < ITERMAX; iter++) {
 			MPI_Barrier(MPI_COMM_WORLD);
 			if(rank == 0) {
