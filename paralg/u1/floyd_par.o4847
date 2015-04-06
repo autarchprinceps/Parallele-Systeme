@@ -1,0 +1,32 @@
+running with  1  nodes
+time for Floyd on 1 processors with n=6000: 1032.712381
+time for Floyd on 1 processors with n=6000: 1023.366182
+time for Floyd on 1 processors with n=6000: 1023.058107
+running with  2  nodes
+time for Floyd on 2 processors with n=6000: 520.506457
+time for Floyd on 2 processors with n=6000: 524.544442
+time for Floyd on 2 processors with n=6000: 523.643557
+running with  3  nodes
+time for Floyd on 3 processors with n=6000: 348.662682
+time for Floyd on 3 processors with n=6000: 347.318804
+time for Floyd on 3 processors with n=6000: 347.493160
+running with  4  nodes
+time for Floyd on 4 processors with n=6000: 260.361453
+time for Floyd on 4 processors with n=6000: 259.807366
+time for Floyd on 4 processors with n=6000: 260.028353
+running with  5  nodes
+time for Floyd on 5 processors with n=6000: 207.464981
+time for Floyd on 5 processors with n=6000: 210.802744
+time for Floyd on 5 processors with n=6000: 205.944076
+running with  6  nodes
+time for Floyd on 6 processors with n=6000: 174.534159
+time for Floyd on 6 processors with n=6000: 174.315528
+time for Floyd on 6 processors with n=6000: 174.208482
+running with  8  nodes
+time for Floyd on 8 processors with n=6000: 130.158248
+time for Floyd on 8 processors with n=6000: 130.562544
+time for Floyd on 8 processors with n=6000: 130.288150
+running with  10  nodes
+time for Floyd on 10 processors with n=6000: 104.933249
+time for Floyd on 10 processors with n=6000: 103.520604
+time for Floyd on 10 processors with n=6000: 105.490179

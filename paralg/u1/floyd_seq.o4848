@@ -1,0 +1,4 @@
+running sequentially (3 times)
+seq time for Floyd with n=6000: 1043.085066
+seq time for Floyd with n=6000: 1040.108663
+seq time for Floyd with n=6000: 899.857401
