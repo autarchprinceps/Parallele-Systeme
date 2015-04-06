@@ -33,3 +33,8 @@ least_square_fit.exe: least_square_fit.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
 least_square_fit.o: least_square_fit.c
+
+pp.exe: pp.p
+	$(MPICC) $(CFLAGS) -o $@ $^ $(LDLIBS)
+pp.p: ping_pong.c
+	$(MPICC) $(CFLAGS) -c $^
