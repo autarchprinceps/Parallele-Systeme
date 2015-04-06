@@ -59,9 +59,9 @@ void pp(unsigned int MSGLENSTART, unsigned int MSGLENMAX, unsigned int MSGLENINC
 			MPI_Barrier(MPI_COMM_WORLD);
 			if(rank == 0) {
 				double t0 = gettime();
-				MPI_Send(buf, msglen, MPI_BYTE, 1, 0, MPI_COMM_WORLD);
+				MPI_Send(buf, msglen, MPI_BYTE, n-1, 0, MPI_COMM_WORLD);
 				MPI_Status status;
-				MPI_Recv(buf, msglen, MPI_BYTE, 1, 0, MPI_COMM_WORLD, &status);
+				MPI_Recv(buf, msglen, MPI_BYTE, n-1, 0, MPI_COMM_WORLD, &status);
 				t0 = (gettime() - t0) / 2;
 				if(t0 < tmin) tmin = t0;
 			} else {
@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &n);
 
-	if(rank == 0 || rank == n) {
+	if(rank == 0 || rank == n-1) {
 		resultset* log = malloc(sizeof(resultset));
 		pp(0, 16384, 256, log);
 		if(rank == 0) {
