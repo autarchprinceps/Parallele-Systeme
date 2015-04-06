@@ -11,7 +11,7 @@ N	= 5000
 # default number of processors for test run (N%P == 0!)
 P	= 2
 
-default:: floyd_seq.exe floyd_mpi.exe least_square_fit.exe pp.exe
+default:: floyd_seq.exe floyd_mpi.exe least_square_fit.exe ping_pong.exe
 
 run:: floyd_seq.exe floyd_mpi.exe
 	./floyd_seq.exe $(N)
@@ -34,7 +34,7 @@ least_square_fit.exe: least_square_fit.o
 
 least_square_fit.o: least_square_fit.c
 
-pp.exe: pp.p
+ping_pong.exe: ping_pong.o
 	$(MPICC) $(CFLAGS) -o $@ $^ $(LDLIBS)
-pp.p: ping_pong.c
+ping_pong.o: ping_pong.c
 	$(MPICC) $(CFLAGS) -c $^
