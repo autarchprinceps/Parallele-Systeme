@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <mpi.h>
 #include <libFHBRS.h>
+#include <math.h>
 
 void leastSquareFit
   (
@@ -84,7 +85,7 @@ void printRS(char* filename, resultset* log) {
 	FILE* f = fopen(filename, "w+");
 	fprintf(f, "alpha;%f;beta;%f\n", log->alpha, log->beta);
 	fprintf(f, "msglen;tmin\n");
-	for(unsigned int = 0; i < log->n; i++) {
+	for(unsigned int i = 0; i < log->n; i++) {
 		fprintf(f, "%f;%f\n", log->x[i], log->y[i]);
 	}
 }
@@ -93,7 +94,7 @@ int main(int argc, char** argv) {
 	MPI_Status statu;
 
 	MPI_Init(&argc, &argv);
-	MPI_Comm_ranl(MPI_COMM_WORLD, &rank);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	MPI_Comm_size(MPI_COMM_WORLD, &n);
 
 	if(rank == 0 || rank == n) {
