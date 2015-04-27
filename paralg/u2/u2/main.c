@@ -29,10 +29,10 @@ void test_lists(unsigned int n) {
     llist* list1 = NULL;
     t1 = gettime();
     for(unsigned int i = 0; i < n; i++) {
-        ll_append(&list, i);
+        ll_append(&list1, i);
     }
     t2 = gettime();
-    ll_foreach(list, &walker_function);
+    ll_foreach(list1, &walker_function);
     t3 = gettime();
     print("llist append", n, t0, t1, t2, t3);
     // llist prepend
@@ -40,27 +40,30 @@ void test_lists(unsigned int n) {
     llist* list2 = NULL;
     t1 = gettime();
     for(unsigned int i = 0; i < n; i++) {
-        ll_prepend(&list, i);
+        ll_prepend(&list2, i);
     }
     t2 = gettime();
-    ll_foreach(list, &walker_function);
+    ll_foreach(list2, &walker_function);
     t3 = gettime();
     print("llist prepend", n, t0, t1, t2, t3);
     // clist append
     t0 = gettime();
-    clist* list3 = cl_create(n);
+    clist* list3 = cl_create(n+10);
     t1 = gettime();
     for(unsigned int i = 0; i < n; i++) {
-        cl_append(&list, i);
+        cl_append(&list3, i);
     }
     t2 = gettime();
-    cl_foreach(list, &walker_function);
+    cl_foreach(list3, &walker_function);
     t3 = gettime();
     print("clist append", n, t0, t1, t2, t3);
 }
 
 int main(int argc, char** argv) {
-
+    unsigned int ns = {1048576, 2097152, 4194304, 8388608, 16777216, 33554432};
+    for(unsigned int i = 0; i < 6; i++) {
+        test_lists(ns[i]);
+    }
     return (EXIT_SUCCESS);
 }
 
