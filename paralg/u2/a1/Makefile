@@ -4,11 +4,9 @@ LDLIBS	= -L/usr/local/libFHBRS -lFHBRS
 
 default: a1.exe
 
-a1.exe: main.o list.o tree.o
+a1.exe: main.o list.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 	
 main.o: main.c
 
 list.o: list.c
-
-tree.o: tree.c
