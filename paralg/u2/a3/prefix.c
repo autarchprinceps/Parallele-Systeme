@@ -1,5 +1,6 @@
 #include "prefix.h"
 #include <omp.h>
+#include <assert.h>
 
 void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atype_t, atype_t)) {
     atype_t last_elems[p-1];
