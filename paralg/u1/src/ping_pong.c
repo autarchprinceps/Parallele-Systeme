@@ -96,10 +96,10 @@ void pp(unsigned int MSGLENSTART, unsigned int MSGLENMAX, unsigned int MSGLENINC
 
 void printRS(char* filename, resultset* log) {
 	FILE* f = fopen(filename, "w+");
-	fprintf(f, "alpha;%f;beta;%f\n", log->alpha, log->beta);
+	fprintf(f, "alpha;%e;beta;%e\n", log->alpha, log->beta);
 	fprintf(f, "msglen;tmin\n");
 	for(unsigned int i = 0; i < log->n; i++) {
-		fprintf(f, "%f;%f\n", log->x[i], log->y[i]);
+		fprintf(f, "%e;%e\n", log->x[i], log->y[i]);
 	}
 }
 
