@@ -18,7 +18,7 @@ static atype_t sum(atype_t x, atype_t y) {
 atype_t test_seq(unsigned int n) {
     atype_t values[n];
     for(unsigned int i = 0; i < n; i++) {
-        values[i] = i;
+        values[i] = i + 1;
     }
     double t0 = gettime();
     atype_t result = sum(values[0], values[1]);
@@ -26,7 +26,7 @@ atype_t test_seq(unsigned int n) {
         result = sum(result, values[i]);
     }
     t0 = gettime() - t0;
-    printf("seq: n: %u t: %e\n",n, t0);
+    printf("seq: n: %u t: %e\n", n, t0);
     return result;
 }
 
@@ -35,7 +35,7 @@ atype_t test_par(unsigned int n, unsigned int p) {
     unsigned int n1 = n + n2;
     atype_t values[n1];
     for(unsigned int i = 0; i < n; i++) {
-        values[n2 - 1 + i] = i;
+        values[n2 - 1 + i] = i + 1;
     }
     double t0 = gettime();
     atype_t result = balanced_tree(p, n1, values, &sum);
