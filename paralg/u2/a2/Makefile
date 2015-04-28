@@ -1,6 +1,6 @@
-CC	= icc -openmp
-CFLAGS	= -std=c99 -O3 -g -I/usr/local/include
-LDLIBS	= -L/usr/local/lib -lFHBRS -lpthread -lm
+CC	= clang -openmp
+CFLAGS	= -std=c99 -O3 -g -I/usr/local/libFHBRS
+LDLIBS	= -L/usr/local/libFHBRS -lFHBRS -lpthread -lm
 
 default:: u2a2.exe
 
