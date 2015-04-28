@@ -46,7 +46,7 @@ atype_t test_par(unsigned long n, unsigned int p) {
 }
 
 int main(int argc, char** argv) {
-    unsigned long ns[] = {1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456};
+    unsigned long ns[] = {1152921504606846976, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456};
     unsigned int ps[] = {1, 2, 4, 8, 16, 32};
     for(unsigned int i = 0; i < 9; i++) {
 	printf("\nn: %lu\n", ns[i]);
