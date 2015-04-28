@@ -46,16 +46,16 @@ atype_t test_par(unsigned long n, unsigned int p) {
 }
 
 int main(int argc, char** argv) {
-    unsigned long ns[] = {1152921504606846976, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456};
+    unsigned long ns[] = {1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456};
     unsigned int ps[] = {1, 2, 4, 8, 16, 32};
     for(unsigned int i = 0; i < 9; i++) {
 	printf("\nn: %lu\n", ns[i]);
         atype_t seq_res = test_seq(ns[i]);
-        // printf("seq_res: %e should: %lu\n", seq_res, ns[i] * (ns[i] + 1) / 2);
+        printf("seq_res: %e should: %lu\n", seq_res, ns[i] * (ns[i] + 1) / 2);
         for(unsigned int j = 0; j < 6; j++) {
 	    printf("p: %u\n", ps[i]);
             atype_t par_res = test_par(ns[i], ps[j]);
-            // printf("par_res: %e should: %lu\n", par_res, ns[i] * (ns[i] + 1) / 2);
+            printf("par_res: %e should: %lu\n", par_res, ns[i] * (ns[i] + 1) / 2);
         }
     }
     
