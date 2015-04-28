@@ -45,14 +45,14 @@ atype_t test_par(unsigned int n, unsigned int p) {
 }
 
 int main(int argc, char** argv) {
-    unsigned int ns[] = {2048};
+    unsigned int ns[] = {1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456};
     unsigned int ps[] = {1, 2, 4, 8, 16, 32};
-    for(unsigned int i = 0; i < 1; i++) {
+    for(unsigned int i = 0; i < 9; i++) {
         atype_t seq_res = test_seq(ns[i]);
-        assert(seq_res = n * (n + 1) / 2);
+        assert(seq_res == ns[i] * (ns[i] + 1) / 2);
         for(unsigned int j = 0; j < 6; j++) {
             atype_t par_res = test_par(ns[i], ps[j]);
-            assert(par_res = seq_res);
+            assert(par_res == seq_res);
         }
     }
     
