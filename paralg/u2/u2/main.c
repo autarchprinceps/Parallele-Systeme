@@ -51,7 +51,7 @@ void test_lists(unsigned int n) {
     clist* list3 = cl_create(n+10);
     t1 = gettime();
     for(unsigned int i = 0; i < n; i++) {
-        cl_append(&list3, i);
+        cl_append(list3, i);
     }
     t2 = gettime();
     cl_foreach(list3, &walker_function);
@@ -60,8 +60,8 @@ void test_lists(unsigned int n) {
 }
 
 int main(int argc, char** argv) {
-    unsigned int ns = {1048576, 2097152, 4194304, 8388608, 16777216, 33554432};
-    for(unsigned int i = 0; i < 6; i++) {
+    unsigned int ns[] = {20000, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432};
+    for(unsigned int i = 0; i < 7; i++) {
         test_lists(ns[i]);
     }
     return (EXIT_SUCCESS);

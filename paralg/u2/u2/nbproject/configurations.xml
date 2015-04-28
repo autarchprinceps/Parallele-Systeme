@@ -39,6 +39,21 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
+        <cTool>
+          <commandlineTool>clang</commandlineTool>
+          <incDir>
+            <pElem>/usr/local/libFHBRS</pElem>
+          </incDir>
+          <incFile>
+            <pElem>/usr/local/libFHBRS</pElem>
+          </incFile>
+        </cTool>
+        <linkerTool>
+          <linkerAddLib>
+            <pElem>/usr/local/libFHBRS</pElem>
+          </linkerAddLib>
+          <commandlineTool>clang</commandlineTool>
+        </linkerTool>
       </compileType>
       <item path="list.c" ex="false" tool="0" flavor2="0">
       </item>
