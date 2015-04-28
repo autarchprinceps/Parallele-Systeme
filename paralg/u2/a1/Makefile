@@ -2,9 +2,9 @@ CC = clang
 CFLAGS	= -std=c99 -Wall -O3 -I/usr/local/libFHBRS
 LDLIBS	= -L/usr/local/libFHBRS -lFHBRS
 
-default: u2.exe
+default: a1.exe
 
-u2.exe: main.o list.o tree.o
+a1.exe: main.o list.o tree.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 	
 main.o: main.c

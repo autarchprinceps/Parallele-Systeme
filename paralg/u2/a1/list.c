@@ -3,31 +3,22 @@
 #include <stdio.h>
 
 void ll_append(llist** start, atype_t data) {
-    // printf("DEBUG ll_append pre %d\n", start);
     if(!(*start)) {
-        // printf("DEBUG ll_append first init\n");
         *start = malloc(sizeof(llist));
         (*start)->next = NULL;
         (*start)->data = data;
-        // printf("DEBUG ll_append first init exit\n");
         return;
     }
-    // printf("DEBUG ll_append later %d\n", start);
     llist* elem = (*start)->next;
-    // printf("DEBUG ll_append later elem assigned\n");
     llist* prev_elem = *start;
-    // printf("DEBUG ll_append later prev_elem assigned\n");
     while(elem) {
-        // printf("DEBUG ll_append later while\n");
         prev_elem = elem;
         elem = elem->next;
     }
-    // printf("DEBUG ll_append later found end\n");
     elem = malloc(sizeof(llist));
     elem->next = NULL;
     elem->data = data;
     prev_elem->next = elem;
-    // printf("DEBUG ll_append later exit\n");
 }
 
 void ll_prepend(llist** start, atype_t data) {
