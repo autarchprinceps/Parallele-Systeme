@@ -23,6 +23,17 @@ void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atyp
             last_elems[rank + 1] = values[next_blockstart - 1];
         }
         #pragma omp barrier
+        if(rank == 0) {
+            printf("seq prefix per block\n");
+            for(unsigned int i = 0; i < n; i++) {
+                printf("%f ", values[i]);
+            }
+            printf("\n");
+            for(unsigned int i = 0; i < p; i++) {
+                printf("%f ", last_elems[i]);
+            }
+            printf("\n");
+        }
         // prefix on last elements
         if(rank == 0) {
             for(unsigned int i = 1; i < p; i++) {
@@ -30,10 +41,32 @@ void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atyp
             }
         }
         #pragma omp barrier
+        if(rank == 0) {
+            printf("prefix on last elems\n");
+            for(unsigned int i = 0; i < n; i++) {
+                printf("%f ", values[i]);
+            }
+            printf("\n");
+            for(unsigned int i = 0; i < p; i++) {
+                printf("%f ", last_elems[i]);
+            }
+            printf("\n");
+        }
         if(rank > 0) {
             for(unsigned int i = blockstart + 1; i < next_blockstart; i++) {
                 values[i] = (*f)(last_elems[rank], values[i]);
             }
+        }
+        if(rank == 0) {
+            printf("final\n");
+            for(unsigned int i = 0; i < n; i++) {
+                printf("%f ", values[i]);
+            }
+            printf("\n");
+            for(unsigned int i = 0; i < p; i++) {
+                printf("%f ", last_elems[i]);
+            }
+            printf("\n");
         }
     }
 }

@@ -59,7 +59,7 @@ void test_par(unsigned int n, unsigned int p) {
 int main(int argc, char** argv) {
     unsigned int ns[] = {8, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456};
     unsigned int ps[] = {1, 2, 4, 8, 16, 32, 38, 56};
-    for(unsigned int i = 0; i < 9; i++) {
+    for(unsigned int i = 0; i < 1/*9*/; i++) {
         test_seq(ns[i]);
         for(unsigned int j = 0; j < 8; j++) {
 	    printf("p: %d\n", ps[j]);
