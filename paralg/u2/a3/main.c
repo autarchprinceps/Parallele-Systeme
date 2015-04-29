@@ -30,7 +30,7 @@ void test_seq(unsigned int n) {
     printf("seq: n: %u t: %e\n",n, t0);
     if(n < 20) {
         for(unsigned int i = 0; i < n; i++) {
-            printf("%e ");
+            printf("%f ", values[i]);
         }
         printf("\n");
     }
@@ -48,11 +48,12 @@ void test_par(unsigned int n, unsigned int p) {
     printf("par: n: %u p: %u t: %e\n", n, p, t0);
     if(n < 20) {
         for(unsigned int i = 0; i < n; i++) {
-            printf("%e ");
+            printf("%f ", par_values[i]);
         }
         printf("\n");
     }
-    free(par_values);
+    printf("pre free\n");
+    // free(par_values);
 }
 
 int main(int argc, char** argv) {
@@ -61,7 +62,9 @@ int main(int argc, char** argv) {
     for(unsigned int i = 0; i < 9; i++) {
         test_seq(ns[i]);
         for(unsigned int j = 0; j < 8; j++) {
+	    printf("p: %d\n", ps[j]);
             test_par(ns[i], ps[j]);
+	    printf("done\n");
         }
     }
     
