@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <omp.h>
 
-#define MAX(x,y) ((x) < (y)) ? (y) : (x)
+#define MIN(x,y) ((x) > (y)) ? (y) : (x)
 
 void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atype_t, atype_t)) {
     // TODO what if p == 1
@@ -12,7 +12,7 @@ void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atyp
     {
         unsigned int rank = omp_get_thread_num(); // [0 .. p-1]
         unsigned int blockstart = (n / p + 1) * rank; 
-        unsigned int next_blockstart = MAX((n / p + 1) * (rank + 1) - 1, n);
+        unsigned int next_blockstart = MIN((n / p + 1) * (rank + 1), n);
         
         printf("%u %u %u\n", rank, blockstart, next_blockstart);
         if(rank == 0) {
