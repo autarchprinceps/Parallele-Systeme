@@ -1,29 +1,38 @@
 #include "prefix.h"
 #include <omp.h>
 
+#define MAX(x,y) ((x) < (y)) ? (y) : (x)
+
 void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atype_t, atype_t)) {
-    atype_t last_elems[p-1];
+    // TODO what if p == 1
+    atype_t last_elems[p];
+    last_elems[0] = 0;
     #pragma omp parallel num_threads(p)
     {
         unsigned int rank = omp_get_thread_num(); // [0 .. p-1]
-        unsigned int blockstart = n / p * rank; 
-        unsigned int next_blockstart = n / p * (rank + 1); // TODO was wenn kann nicht ganz aufgeteilt werden
+        unsigned int blockstart = (n / p + 1) * rank; 
+        unsigned int next_blockstart = MAX((n / p + 1) * (rank + 1), n);
+        
+        // sequential prefix per block
         for(unsigned int i = blockstart + 1; i < next_blockstart; i++) {
             values[i] = (*f)(values[i-1], values[i]);
         }
+        
+        // get last block elements
+        if(rank < p - 1) {
+            last_elems[rank + 1] = values[next_blockstart - 1];
+        }
         #pragma omp barrier
+        // prefix on last elements
         if(rank == 0) {
-            unsigned int j = 0;
-            last_elems[0] = values[n/p - 1];
-            for(unsigned int i = n/p * 2 - 1; i < n; i += n/p) { // TODO letzter block nicht?
-                last_elems[j] = (*f)(last_elems[j-1], values[i])
-                j++;
+            for(unsigned int i = 1; i < p; i++) {
+                last_elems[i] = (*f)(last_elems[i-1], last_elems[i]);
             }
         }
         #pragma omp barrier
         if(rank > 0) {
             for(unsigned int i = blockstart + 1; i < next_blockstart; i++) {
-                values[i] = (*f)(last_elems[rank - 1], values[i]);
+                values[i] = (*f)(last_elems[rank], values[i]);
             }
         }
     }
