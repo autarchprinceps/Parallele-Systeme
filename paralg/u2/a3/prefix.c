@@ -5,7 +5,6 @@
 #define MIN(x,y) ((x) > (y)) ? (y) : (x)
 
 void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atype_t, atype_t)) {
-    // TODO what if p == 1
     atype_t last_elems[p];
     last_elems[0] = 0;
     #pragma omp parallel num_threads(p)
