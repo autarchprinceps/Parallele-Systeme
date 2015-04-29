@@ -11,8 +11,8 @@ void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atyp
     #pragma omp parallel num_threads(p)
     {
         unsigned int rank = omp_get_thread_num(); // [0 .. p-1]
-        unsigned int blockstart = (n / p + 1) * rank; 
-        unsigned int next_blockstart = MIN((n / p + 1) * (rank + 1), n);
+        unsigned int blockstart = (n / p) * rank; 
+        unsigned int next_blockstart = MIN((n / p) * (rank + 1), n);
         
         printf("%u %u %u\n", rank, blockstart, next_blockstart);
         if(rank == 0) {
