@@ -67,7 +67,7 @@ void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atyp
         }
         #pragma omp barrier // DEBUG
         if(rank > 0) {
-            for(unsigned int i = blockstart + 1; i < next_blockstart; i++) {
+            for(unsigned int i = blockstart; i < next_blockstart; i++) {
                 values[i] = (*f)(last_elems[rank], values[i]);
             }
         }
