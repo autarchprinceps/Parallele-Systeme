@@ -13,6 +13,15 @@ void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atyp
         unsigned int blockstart = (n / p + 1) * rank; 
         unsigned int next_blockstart = MAX((n / p + 1) * (rank + 1), n);
         
+        printf("%u %u %u\n", rank, blockstart, next_blockstart);
+        if(rank == 0) {
+            printf("pre\n");
+            for(unsigned int i = 0; i < n; i++) {
+                printf("%f ", values[i]);
+            }
+            printf("\n");
+        }
+        
         // sequential prefix per block
         for(unsigned int i = blockstart + 1; i < next_blockstart; i++) {
             values[i] = (*f)(values[i-1], values[i]);
