@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
     unsigned int ps[] = {1, 2, 4, 8, 16, 32, 38, 56};
     for(unsigned int i = 0; i < 1/*9*/; i++) {
         test_seq(ns[i]);
-        for(unsigned int j = 0; j < 4/*8*/; j++) {
+        for(unsigned int j = 0; j < 3/*8*/; j++) {
 	    printf("p: %d\n", ps[j]);
             test_par(ns[i], ps[j]);
 	    printf("done\n");

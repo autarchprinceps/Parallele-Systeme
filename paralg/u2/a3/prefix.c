@@ -1,4 +1,5 @@
 #include "prefix.h"
+#include <stdio.h>
 #include <omp.h>
 
 #define MAX(x,y) ((x) < (y)) ? (y) : (x)
@@ -11,7 +12,7 @@ void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atyp
     {
         unsigned int rank = omp_get_thread_num(); // [0 .. p-1]
         unsigned int blockstart = (n / p + 1) * rank; 
-        unsigned int next_blockstart = MAX((n / p + 1) * (rank + 1), n);
+        unsigned int next_blockstart = MAX((n / p + 1) * (rank + 1) - 1, n);
         
         // sequential prefix per block
         for(unsigned int i = blockstart + 1; i < next_blockstart; i++) {
