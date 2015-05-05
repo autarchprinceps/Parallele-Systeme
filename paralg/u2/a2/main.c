@@ -34,8 +34,12 @@ atype_t test_par(unsigned long n, unsigned int p) {
     unsigned long n2 = n - 1;
     unsigned long n1 = n + n2;
     atype_t* values = malloc(n1 * sizeof(atype_t));
-    for(unsigned long i = 0; i < n; i++) {
-        values[n2 - 1 + i] = i + 1;
+    #pragma omp parallel num_threads(p)
+    {
+        #pragma omp for
+        for(unsigned long i = 0; i < n; i++) {
+            values[n2 - 1 + i] = i + 1;
+        }
     }
     double t0 = gettime();
     atype_t result = balanced_tree(p, n1, values, &sum);

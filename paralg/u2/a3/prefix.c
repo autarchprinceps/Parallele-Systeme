@@ -13,17 +13,6 @@ void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atyp
         unsigned int blockstart = ((n % p == 0) ? (n / p) : (n / p + 1)) * rank; 
         unsigned int next_blockstart = MIN(((n % p == 0) ? (n / p) : (n / p + 1)) * (rank + 1), n);
         
-        /*printf("%u %u %u\n", rank, blockstart, next_blockstart);
-        #pragma omp barrier // DEBUG
-        if(rank == 0) {
-            printf("pre\n");
-            for(unsigned int i = 0; i < n; i++) {
-                printf("%f ", values[i]);
-            }
-            printf("\n");
-        }
-        #pragma omp barrier // DEBUG*/
-        
         // sequential prefix per block
         for(unsigned int i = blockstart + 1; i < next_blockstart; i++) {
             values[i] = (*f)(values[i-1], values[i]);
@@ -34,18 +23,6 @@ void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atyp
             last_elems[rank + 1] = values[next_blockstart - 1];
         }
         #pragma omp barrier
-        /*if(rank == 0) {
-            printf("seq prefix per block\n");
-            for(unsigned int i = 0; i < n; i++) {
-                printf("%f ", values[i]);
-            }
-            printf("\n");
-            for(unsigned int i = 0; i < p; i++) {
-                printf("%f ", last_elems[i]);
-            }
-            printf("\n");
-        }
-        #pragma omp barrier // DEBUG*/
         // prefix on last elements
         if(rank == 0) {
             for(unsigned int i = 1; i < p; i++) {
@@ -53,35 +30,10 @@ void prefix(unsigned int p, unsigned int n, atype_t values[n], atype_t (*f)(atyp
             }
         }
         #pragma omp barrier
-        /*if(rank == 0) {
-            printf("prefix on last elems\n");
-            for(unsigned int i = 0; i < n; i++) {
-                printf("%f ", values[i]);
-            }
-            printf("\n");
-            for(unsigned int i = 0; i < p; i++) {
-                printf("%f ", last_elems[i]);
-            }
-            printf("\n");
-        }
-        #pragma omp barrier // DEBUG*/
         if(rank > 0) {
             for(unsigned int i = blockstart; i < next_blockstart; i++) {
                 values[i] = (*f)(last_elems[rank], values[i]);
             }
         }
-        /*#pragma omp barrier // DEBUG
-        if(rank == 0) {
-            printf("final\n");
-            for(unsigned int i = 0; i < n; i++) {
-                printf("%f ", values[i]);
-            }
-            printf("\n");
-            for(unsigned int i = 0; i < p; i++) {
-                printf("%f ", last_elems[i]);
-            }
-            printf("\n");
-        }
-        #pragma omp barrier // DEBUG*/
     }
 }

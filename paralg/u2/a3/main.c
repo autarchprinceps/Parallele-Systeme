@@ -39,8 +39,12 @@ void test_seq(unsigned int n) {
 
 void test_par(unsigned int n, unsigned int p) {
     atype_t* par_values = malloc(sizeof(atype_t) * n);
-    for(unsigned int i = 0; i < n; i++) {
-        par_values[i] = i + 1;
+    #pragma omp parallel num_threads(p)
+    {
+        #pragma omp for
+        for(unsigned int i = 0; i < n; i++) {
+            par_values[i] = i + 1;
+        }
     }
     double t0 = gettime();
     prefix(p, n, par_values, &sum);
