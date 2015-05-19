@@ -170,9 +170,9 @@ void test_par(unsigned int n) {
 
 int main(int argc, char** argv) {
 	MPI_Init(&argc, &argv);
-    unsigned int ns[] = {2048, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456};
+    unsigned int ns[] = {1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456};
 
-	for(unsigned int i = 0; i < 1; i++) { // 9
+	for(unsigned int i = 0; i < 9; i++) {
 		test_seq(ns[i]);
 		test_par(ns[i]);
 	}   

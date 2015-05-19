@@ -1,10 +1,10 @@
 ########################################################################
 
 MPICC		= mpicc
-# CFLAGS		= -O2 -std=c99 -I/usr/local/include -Wall
-CFLAGS		= -O2 -std=c99 -I/usr/local/libFHBRS -Wall
-# LDLIBS		= -L/usr/local/lib -lFHBRS -lm
-LDLIBS		= -L/usr/local/libFHBRS -lFHBRS -lm
+CFLAGS		= -O2 -std=c99 -I/usr/local/include -Wall
+# CFLAGS		= -O2 -std=c99 -I/usr/local/libFHBRS -Wall
+LDLIBS		= -L/usr/local/lib -lFHBRS -lm
+# LDLIBS		= -L/usr/local/libFHBRS -lFHBRS -lm
 
 ########################################################################
 
