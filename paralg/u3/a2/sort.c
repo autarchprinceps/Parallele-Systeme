@@ -26,7 +26,7 @@ void test_seq(unsigned int n) {
 	if(rank == 0) {
 		atype_t* values = malloc(sizeof(atype_t) * n);
 		for(unsigned int i = 0; i < n; i++) {
-		    values[i] = rand();
+		    values[i] = n - i;
 		}
 		double t0 = gettime();
 		qsort(values, n, sizeof(atype_t), compare);
@@ -82,7 +82,7 @@ void test_par(unsigned int n) {
 	unsigned int startidx = rank * np;
 	unsigned int nextstartidx = (rank + 1) * np;
 	for(unsigned int i = startidx; i < nextstartidx; i++) {
-		values[i - startidx] = rand();
+		values[i - startidx] = n - (startidx + i);
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
 	double t0;
@@ -161,7 +161,6 @@ void test_par(unsigned int n) {
 
 int main(int argc, char** argv) {
 	MPI_Init(&argc, &argv);
-	srand(time(NULL));
     unsigned int ns[] = {1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456};
 
 	for(unsigned int i = 0; i < 9; i++) {
