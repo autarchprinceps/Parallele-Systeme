@@ -13,7 +13,7 @@
 
 typedef int atype_t;
 
-atype_t compare(const void *p, const void *q) {
+int compare(const void *p, const void *q) {
     atype_t x = *(const atype_t *)p;
     atype_t y = *(const atype_t *)q;
     return (x > y) ? 1 : ((x == y) ? 0 : -1);
@@ -26,7 +26,7 @@ void test_seq(unsigned int n) {
 	if(rank == 0) {
 		atype_t* values = malloc(sizeof(atype_t) * n);
 		for(unsigned int i = 0; i < n; i++) {
-		    values[i] = rand(); // TODO Random?
+		    values[i] = rand();
 		}
 		double t0 = gettime();
 		qsort(values, n, sizeof(atype_t), compare);
@@ -93,25 +93,15 @@ void test_par(unsigned int n) {
 	qsort(values, np, ats, compare);
 	// odd even exchange & merge
 	for(unsigned int j = 0; j < p; j++) {
-		// DBGFPR(stderr, "DEBUG %d: parsort start loop %u\n", rank, j);
 		int even = (rank % 2) == (j % 2);
 		int other = rank + (even ? 1 : -1);
-		// DBGFPR(stderr, "DEBUG %d: parsort other %d\n", rank, other);
-		if(other < 0 || other >= p) {
-			// DBGFPR(stderr, "DEBUG %d: parsort skip loop %u\n", rank, j);
-			continue;
-		}
+		if(other < 0 || other >= p) continue;
 		MPI_Request request;
 		MPI_Isend(values, np, MPI_INT, other, j, MPI_COMM_WORLD, &request);
-		// DBGFPR(stderr, "DEBUG %d: parsort send %u\n", rank, j);
 		MPI_Recv(rec_values, np, MPI_INT, other, j, MPI_COMM_WORLD, &status);
-		// DBGFPR(stderr, "DEBUG %d: parsort recv loop %u\n", rank, j);
 		merge(even, np, values, rec_values, new_values);
-		// DBGFPR(stderr, "DEBUG %d: parsort merged loop %u\n", rank, j);
 		swap(&values, &new_values);
-		// DBGFPR(stderr, "DEBUG %d: parsort swapped loop %u\n", rank, j);
 		MPI_Wait(&request, &status);
-		// DBGFPR(stderr, "DEBUG %d: parsort end loop %u\n", rank, j);
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
 	if(rank == 0) {
