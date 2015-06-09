@@ -1,0 +1,8 @@
+If you start the program with "make run" the program reads a graph
+file. The graph data structure needs 64 GB.
+
+Please be aware that wr5 has only 128 GB.
+
+Conclusions: you cannot allocate any amount of memory you want. If you
+need additional data structures please (as always) think about what
+you need and what you don't need.

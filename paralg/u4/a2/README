@@ -1,0 +1,4 @@
+The graph data structure is a simple dense matrix representation.
+A set is just a boolean vector indicating in a[i] whether the i-th element is part of the set or not.
+
+"make run" will start the program with an example data set.
