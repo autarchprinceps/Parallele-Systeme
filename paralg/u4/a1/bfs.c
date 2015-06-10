@@ -122,7 +122,7 @@ static counter_t bfs_parallel(
 			bfs_level[v] = UNLIMITED;
 		}
 		#pragma omp single
-		level[source] = 0;
+		bfs_level[source] = 0;
 		// Iterations
 		counter_t currentLevel;
 		for(currentLevel = 0; doNext; currentLevel++) {
