@@ -126,7 +126,7 @@ static counter_t bfs_parallel(
 		// Iterations
 		counter_t currentLevel;
 		for(currentLevel = 0; doNext; currentLevel++) {
-			#pragma omp barrier // TODO necessary?
+			// #pragma omp barrier // TODO necessary?
 			#pragma omp single
 			doNext = false;
 			#pragma omp for
@@ -145,7 +145,7 @@ static counter_t bfs_parallel(
 			}
 		}
 		#pragma omp single
-		max_level = currentLevel; // TODO is increase one too often?
+		max_level = currentLevel - 1; // is increase one too often
 	}
 
 	return max_level;
