@@ -123,9 +123,11 @@ static counter_t bfs_parallel(
 		}
 		#pragma omp single
 		level[source] = 0;
+		// Iterations
 		counter_t currentLevel;
 		for(currentLevel = 0; doNext; currentLevel++) {
 			#pragma omp barrier // TODO necessary?
+			#pragma omp single
 			doNext = false;
 			#pragma omp for
 			graphVertexIterator(g, vi) {
