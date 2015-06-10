@@ -126,7 +126,7 @@ static counter_t bfs_parallel(
 		// Iterations
 		counter_t currentLevel;
 		for(currentLevel = 0; doNext; currentLevel++) {
-			#pragma omp barrier // TODO necessary?
+			#pragma omp barrier
 			#pragma omp single
 			doNext = false;
 			#pragma omp for
@@ -138,14 +138,15 @@ static counter_t bfs_parallel(
 						vertex_t u = graphEdgeGetToVertex(g, e);
 						if(bfs_level[u] > currentLevel + 1) {
 							bfs_level[u] = currentLevel + 1;
-							doNext = true;
+							if(!doNext)
+								doNext = true;
 						}
 					}
 				}
 			}
 		}
 		#pragma omp single
-		max_level = currentLevel - 1; // is increase one too often
+		max_level = currentLevel - 1; // is increase one too often due to the way for works
 	}
 
 	return max_level;
