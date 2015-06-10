@@ -126,7 +126,7 @@ static counter_t bfs_parallel(
 		// Iterations
 		counter_t currentLevel;
 		for(currentLevel = 0; doNext; currentLevel++) {
-			// #pragma omp barrier // TODO necessary?
+			#pragma omp barrier // TODO necessary?
 			#pragma omp single
 			doNext = false;
 			#pragma omp for
