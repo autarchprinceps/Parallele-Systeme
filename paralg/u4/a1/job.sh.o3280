@@ -1,0 +1,23 @@
+./bfs.exe /scratch/src/data/graphs/bin64/rmat/rmat_100M_8000M_0.30_0.25_0.26.bin64
+read graph...
+graph_id            : /scratch/src/data/graphs/bin64/rmat/rmat_100M_8000M_0.30_0.25_0.26.bin64
+  #vertices         : 100000000
+  #edges            : 8000000000 (4000000000 unique edges)
+  vertex_size       : 8 bytes
+  edge_size         : 8 bytes
+  memory_(cur/max)  : 64.8 GB / 64.8 GB
+  vertex_degrees    : min=1, max=1807, avg=80.000, stddev=79.985, selfEdges=0.000%, parEdges=0.000%
+  has_vertex_weights: no
+  has_edge_weights  : no
+  is_directed       : no
+sequential bfs           : 141.151670 s (max-level=15)
+parallel bfs ( 1 threads): 132.161208 s (max-level=15), speedup=1.07
+parallel bfs ( 2 threads):  53.809069 s (max-level=15), speedup=2.62
+parallel bfs ( 4 threads):  28.046160 s (max-level=15), speedup=5.03
+parallel bfs ( 8 threads):  17.297357 s (max-level=15), speedup=8.16
+parallel bfs (16 threads):  12.612426 s (max-level=15), speedup=11.19
+parallel bfs (24 threads):  10.040885 s (max-level=15), speedup=14.06
+parallel bfs (32 threads):   9.811267 s (max-level=15), speedup=14.39
+parallel bfs (40 threads):   9.537465 s (max-level=15), speedup=14.80
+parallel bfs (48 threads):   9.950134 s (max-level=15), speedup=14.19
+parallel bfs (56 threads):   9.859159 s (max-level=15), speedup=14.32
