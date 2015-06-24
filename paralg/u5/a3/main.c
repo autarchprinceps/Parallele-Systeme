@@ -135,7 +135,9 @@ int main(int argc, char** argv) {
             t = gettime();
             result = par_midpoint(ps[pidx], a, b, n, sin);
             t = gettime() - t;
+            printf(";%e;%e", t, result);
         }
+        printf("\n");
     }
     printf("\ntrapezoid\n");
     for(unsigned int n = 1; n <= 1000000; n *= 10) {
@@ -148,7 +150,9 @@ int main(int argc, char** argv) {
             t = gettime();
             result = par_trapezoid(ps[pidx], a, b, n, sin);
             t = gettime() - t;
+            printf(";%e;%e", t, result);
         }
+        printf("\n");
     }
     printf("\nsimpson\n");
     for(unsigned int n = 1; n <= 1000000; n *= 10) {
@@ -161,7 +165,9 @@ int main(int argc, char** argv) {
             t = gettime();
             result = par_simpson(ps[pidx], a, b, n, sin);
             t = gettime() - t;
+            printf(";%e;%e", t, result);
         }
+        printf("\n");
     }
     printf("\nmontecarlo\n");
     for(unsigned int n = 1; n <= 1000000; n *= 10) {
@@ -174,7 +180,9 @@ int main(int argc, char** argv) {
             t = gettime();
             result = par_montecarlo(ps[pidx], a, b, n, sin);
             t = gettime() - t;
+            printf(";%e;%e", t, result);
         }
+        printf("\n");
     }
     printf("\n\n");
 
